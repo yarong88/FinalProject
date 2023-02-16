@@ -1,27 +1,7 @@
 <template>
   <hr />
-  <div class="search_group">
-    <div class="search_wrap">
-      <span class="icon"
-        ><i
-          class="fa fa-search"
-          style="
-            font-size: 20px;
-            background-color: rgb(128, 128, 128);
-            color: #fff;
-            padding: 5px 20px;
-            border-radius: 10px;
-          "
-          ><input
-            type="text"
-            id="search"
-            placeholder="검색어를 입력해주세요" /></i
-      ></span>
-    </div>
-    <button class="bt1">이게 뭐노....</button>
-  </div>
   <br />
-  <SearchResult />
+  <SearchResult v-model="inputtext" />
   <div class="wrap_memo">
     <div class="memo_title">메모</div>
     <div class="memo_container">
@@ -88,48 +68,32 @@
 /* eslint-disable */
 import DetailContent from "@/components/DetailContent.vue";
 import SearchResult from "@/components/SearchResult.vue";
+import SearchInput from "@/components/SearchInput.vue";
 export default {
+  props: ["value"],
   components: {
     DetailContent,
+    SearchInput,
     SearchResult,
   },
   data() {
     return {
       status: false,
+      inputtext: "",
     };
   },
   methods: {
     detailContent: function () {
       this.status = !this.status;
     },
-    search: function () {},
+    updateInput: function (event) {
+      this.$emit("input", event.target.value);
+    },
   },
 };
 </script>
 
 <style>
-#search {
-  background-color: rgb(128, 128, 128);
-  width: 400px;
-  height: 50px;
-  border: 0;
-  margin-left: 15px;
-  font-size: 15px;
-}
-#search::placeholder {
-  color: #fff;
-}
-.search_wrap {
-  margin: 20px;
-}
-.icon {
-  width: 20px;
-  height: 20px;
-}
-.search_img {
-  height: 30px;
-  widows: 30px;
-}
 .wrap_memo {
   padding: 20px;
   margin: 10px;

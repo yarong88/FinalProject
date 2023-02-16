@@ -65,9 +65,13 @@
 <script>
 /* eslint-disable */
 import DetailContent from "@/components/DetailContent.vue";
+import SearchInput from "@/components/SearchInput.vue";
+import SearchResult from "@/components/SearchResult.vue";
 export default {
   components: {
     DetailContent,
+    SearchInput,
+    SearchResult,
   },
   data() {
     return {
@@ -78,7 +82,6 @@ export default {
     detailContent: function () {
       this.status = !this.status;
     },
-    search: function () {},
   },
 };
 </script>
