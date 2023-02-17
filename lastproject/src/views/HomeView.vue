@@ -188,12 +188,12 @@
         <div class="box">
           <div
             class="a"
-            @click="detailContent"
+            @click="detailContent(data)"
             v-for="data of dataBox"
             v-bind:key="data"
           >
             <div>{{ data.textbox[0] }}</div>
-            <div>{{ data.src }}</div>
+            <img :src="data.src" alt="" style="width: 75%; height: 75%" />
           </div>
         </div>
       </div>
@@ -220,6 +220,7 @@ export default {
   data() {
     return {
       status: false,
+      searchStatue: false,
       initialImage: [
         {
           type: "dash",

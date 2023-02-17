@@ -2,7 +2,7 @@
   <hr />
   <br />
   <SearchResult v-model="inputtext" />
-  <div class="wrap_memo">
+  <!-- <div class="wrap_memo">
     <div class="memo_title">메모</div>
     <div class="memo_container">
       <DetailContent v-if="status" />
@@ -58,8 +58,7 @@
         </div>
       </div>
     </div>
-  </div>
-
+  </div> -->
   <hr />
   <div class="footer">Footer</div>
 </template>
