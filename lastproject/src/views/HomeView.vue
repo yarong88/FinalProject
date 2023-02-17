@@ -120,6 +120,42 @@
             style="border: solid 1px #000000"
           />
           </div> -->
+            <div class="star_tool">
+              <form name="myform" id="myform" method="post" action="./save">
+                <fieldset>
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="5"
+                    id="rate1"
+                  /><label for="rate1">⭐</label>
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="4"
+                    id="rate2"
+                  /><label for="rate2">⭐</label>
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="3"
+                    id="rate3"
+                  /><label for="rate3">⭐</label>
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="2"
+                    id="rate4"
+                  /><label for="rate4">⭐</label>
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="1"
+                    id="rate5"
+                  /><label for="rate5">⭐</label>
+                </fieldset>
+              </form>
+            </div>
             <div class="input-text-container">
               <p>
                 현재 글쓰기 시작점은 {{ cx }},{{ cy }}입니다.
@@ -135,8 +171,11 @@
                 v-model="text"
                 @keyup.enter="fillmessage()"
                 autofocus
+                placeholder="Enter를 입력하면 출력됩니다."
               />
-              <button @click="imgSave">save</button>
+              <button class="save_tool" @click="imgSave">
+                <img class="save_img" src="../assets/save.png" alt="" />save
+              </button>
             </div>
           </div>
         </div>
@@ -145,45 +184,6 @@
       <!-- 메모장 확인 창 시작 -->
       <DetailContent v-if="status" />
       <!-- 메모장 확인 창 끝 -->
-      <!-- 메모장 더미 시작 -->
-      <!-- <div v-if="!status" class="write_wrap">
-        <div class="write_area">Main content</div>
-        <div class="memo_tool">
-          <div class="write_tool">
-            <div>?????</div>
-          </div>
-          <div class="star_tool">
-            <form name="myform" id="myform" method="post" action="./save">
-              <fieldset>
-                <input type="radio" name="rating" value="5" id="rate1" /><label
-                  for="rate1"
-                  >⭐</label
-                >
-                <input type="radio" name="rating" value="4" id="rate2" /><label
-                  for="rate2"
-                  >⭐</label
-                >
-                <input type="radio" name="rating" value="3" id="rate3" /><label
-                  for="rate3"
-                  >⭐</label
-                >
-                <input type="radio" name="rating" value="2" id="rate4" /><label
-                  for="rate4"
-                  >⭐</label
-                >
-                <input type="radio" name="rating" value="1" id="rate5" /><label
-                  for="rate5"
-                  >⭐</label
-                >
-              </fieldset>
-            </form>
-          </div>
-          <div class="save_tool">
-            <img class="save_img" src="../assets/save.png" alt="" />
-          </div>
-        </div>
-      </div> -->
-      <!-- 메모장 더미 끝 -->
       <div class="sidebar">
         <div class="box">
           <div
@@ -418,7 +418,9 @@ body {
 }
 .input-text {
   width: 300px;
-  height: 150px;
+  height: 100px;
+  text-align: center;
+  font-size: 20px;
 }
 .wrap_memo {
   padding: 20px;
@@ -510,8 +512,8 @@ body {
   height: 30px;
   width: 150px;
   text-align: center;
-  position: absolute;
-  right: 2.5em;
+  /* position: absolute; */
+  /* right: 2.5em; */
   /* background-color: #777777; */
 }
 #myform fieldset {
@@ -542,16 +544,16 @@ body {
   text-shadow: 0 0 0 black; /* 마우스 클릭 체크 */
 }
 .save_tool {
-  width: 30px;
-  padding: 10px;
+  width: 100px;
+  /* padding: 10px; */
   height: 30px;
-  position: absolute;
-  right: 0;
+  /* position: absolute;
+  right: 0; */
   cursor: pointer;
 }
 .save_img {
-  width: 100%;
-  height: 100%;
+  width: 20px;
+  height: 20px;
   background-color: #cccccc;
   border-radius: 8px;
 }
