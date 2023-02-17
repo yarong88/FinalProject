@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="flex-row">
+    <div class="CanvasContent">
       <div class="source">
         <div class="canvas-container">
           <p>Canvas:</p>
@@ -92,7 +92,7 @@
           <button type="button" @click.prevent="removeSavedStrokes()">
             Remove Saved Strokes
           </button>
-        </div> -->
+          </div> -->
           <div class="background-container">
             <div style="margin-right: 30px">
               <p style="margin-bottom: 0">Background Color:</p>
@@ -105,7 +105,7 @@
             <!-- <div>
             <p style="margin-bottom: 0">Upload Watermark Image:</p>
             <input type="file" @change="setWatermarkImage($event)" />
-          </div> -->
+            </div> -->
           </div>
           <!-- 이미지 추출은 this.image => img.src
           <div class="output">
@@ -115,7 +115,7 @@
             :src="image"
             style="border: solid 1px #000000"
           />
-        </div> -->
+          </div> -->
           <div class="input-text-container">
             <p>
               현재 글쓰기 시작점은 {{ cx }},{{ cy }}입니다.
@@ -130,6 +130,7 @@
               type="text"
               v-model="text"
               @keyup.enter="fillmessage()"
+              autofocus
             />
           </div>
         </div>
@@ -181,6 +182,7 @@ export default {
       watermark: null,
       additionalImages: [],
       text: "",
+      textbox: [],
     };
   },
   mounted() {
@@ -206,6 +208,8 @@ export default {
       // canvas에 text가 삽입된 img를 매번 로딩하기 위해서 최신 text 이미지를 덮어씌워준다.
     },
     async fillmessage() {
+      this.textbox.push(this.text);
+      // text 기록
       const canvas_dum = document.createElement("canvas");
       canvas_dum.width = 600;
       canvas_dum.height = 400;
