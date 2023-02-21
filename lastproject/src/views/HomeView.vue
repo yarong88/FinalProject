@@ -1,13 +1,17 @@
 <template>
   <hr />
   <div class="wrap_memo">
-    <div class="memo_title">메모</div>
+    <div class="memo_title">
+      <!-- 사이드 바 출력 버튼 -->
+      <button class="sidebarOnOff" @click="sidebarOnOff">사이드 바</button>
+    </div>
     <div class="memo_container">
       <!-- 메모장 시작 -->
-      <div class="CanvasContent" v-if="!status">
+      <div class="CanvasContent" v-if="!mainStatus">
         <div class="source">
           <div class="canvas-container">
             <p>Canvas:</p>
+            <!-- 캔버스 컴포넌트 시작 -->
             <vue-drawing-canvas
               ref="VueCanvasDrawing"
               v-model:image="image"
@@ -33,36 +37,31 @@
               :additional-images="additionalImages"
               @click="offsetClick"
             />
+            <!-- 캔버스 컴포넌트 끝 -->
           </div>
+          <!-- 캔버스 툴 시작 -->
           <div class="button-container">
             <div class="stroke-button-container">
-              <button type="button" @click.prevent="disabled = !disabled">
-                <span v-if="!disabled">Unlock</span>
-                <span v-else>Lock</span>
-              </button>
               <button
                 type="button"
+                @click="clickRedraw"
                 @click.prevent="$refs.VueCanvasDrawing.undo()"
               >
-                Undo
+                작업취소
               </button>
               <button
                 type="button"
+                @click="clickRedraw"
                 @click.prevent="$refs.VueCanvasDrawing.redo()"
               >
-                Redo
-              </button>
-              <button
-                type="button"
-                @click.prevent="$refs.VueCanvasDrawing.redraw()"
-              >
-                Refresh
+                취소취소
               </button>
               <button
                 type="button"
                 @click.prevent="$refs.VueCanvasDrawing.reset()"
+                @click="allClear"
               >
-                Reset
+                모두삭제
               </button>
             </div>
             <div class="stroke-style-button-container">
@@ -77,49 +76,27 @@
               </select>
               <input type="color" v-model="color" />
               <select v-model="strokeType">
-                <option value="dash">Dash</option>
-                <option value="line">Straight Line</option>
-                <option value="circle">Circle</option>
-                <option value="square">Square</option>
-                <option value="triangle">Triangle</option>
-                <option value="half_triangle">Half Triangle</option>
+                <option value="dash">그리기</option>
+                <option value="line">선</option>
+                <option value="circle">원</option>
+                <option value="square">사각형</option>
+                <option value="triangle">삼각형</option>
               </select>
               <button type="button" @click.prevent="fillShape = !fillShape">
-                <span v-if="fillShape"> Fill </span>
-                <span v-else> Stroke </span>
+                <span v-if="fillShape"> 채우기 </span>
+                <span v-else> 선 </span>
               </button>
             </div>
-            <!-- <div class="button-container">
-          <button type="button" @click.prevent="getStrokes()">
-            Save All Strokes
-          </button>
-          <button type="button" @click.prevent="removeSavedStrokes()">
-            Remove Saved Strokes
-          </button>
-          </div> -->
             <div class="background-container">
-              <div style="margin-right: 30px">
-                <p style="margin-bottom: 0">Background Color:</p>
+              <div>
+                <p style="margin-bottom: 0">배경색상:</p>
                 <input type="color" v-model="backgroundColor" />
               </div>
               <div>
-                <p style="margin-bottom: 0">Upload Background Image:</p>
+                <p style="margin-bottom: 0">이미지 업로드:</p>
                 <input type="file" @change="setImage($event)" />
               </div>
-              <!-- <div>
-            <p style="margin-bottom: 0">Upload Watermark Image:</p>
-            <input type="file" @change="setWatermarkImage($event)" />
-            </div> -->
             </div>
-            <!-- 이미지 추출은 this.image => img.src
-          <div class="output">
-          <p>Output:</p>
-          <img
-            ref="outputResult"
-            :src="image"
-            style="border: solid 1px #000000"
-          />
-          </div> -->
             <div class="star_tool">
               <form name="myform" id="myform" method="post" action="./save">
                 <fieldset>
@@ -164,6 +141,13 @@
                 <strong>{{ x }}</strong
                 >, y-axis: <strong>{{ y }}</strong>
               </p>
+              <select v-model="fontSize">
+                <option v-for="n in 25" :key="'option-' + n" :value="n">
+                  {{ n }}
+                </option>
+              </select>
+              <input type="color" v-model="fontColor" />
+              <!-- <button @click="deleteText">뒤로가기</button> -->
               <input
                 class="input-text"
                 ref="inputText"
@@ -178,25 +162,54 @@
               </button>
             </div>
           </div>
+          <!-- 캔버스 툴 끝 -->
         </div>
       </div>
       <!-- 메모장 끝 -->
       <!-- 메모장 확인 창 시작 -->
-      <DetailContent v-if="status" />
-      <!-- 메모장 확인 창 끝 -->
-      <div class="sidebar">
-        <div class="box">
-          <div
-            class="a"
-            @click="detailContent(data)"
-            v-for="data of dataBox"
-            v-bind:key="data"
-          >
-            <div>{{ data.textbox[0] }}</div>
-            <img :src="data.src" alt="" style="width: 75%; height: 75%" />
+      <div class="DetailContent" v-if="mainStatus">
+        <div class="source">
+          <div>
+            <img
+              :src="detailBox.contentImage"
+              alt=""
+              style="width: 100%; height: 100%"
+            />
+          </div>
+          <div>
+            <div>
+              {{ detailBox.contentText[0] }}
+            </div>
+
+            <div>{{ detailBox.writingTime }}</div>
+            <span>{{ detailBox.ratingScore }}점</span>
+            <span>추천 : {{ detailBox.recommendPoint }}</span>
           </div>
         </div>
       </div>
+      <!-- 메모장 확인 창 끝 -->
+      <!-- 사이드 바 시작 -->
+      <div class="sidebar" v-if="sidebarStatus">
+        <div class="box">
+          <div
+            class="a"
+            @click="mainOnOff(data)"
+            v-for="data of sideDateBox"
+            v-bind:key="data"
+          >
+            <div style="font-size: large; margin: 10px">
+              {{ data.contentText[0] }}
+            </div>
+            <img
+              :src="data.contentImage"
+              alt=""
+              style="width: 60%; height: 60%"
+            />
+            <div style="font-size: small">{{ data.writingTime }}</div>
+          </div>
+        </div>
+      </div>
+      <!-- 사이드 바 끝 -->
     </div>
   </div>
 
@@ -206,21 +219,16 @@
 
 <script>
 /* eslint-disable */
+import axios from "axios";
 import VueDrawingCanvas from "vue-drawing-canvas";
-import DetailContent from "@/components/DetailContent.vue";
-import SearchInput from "@/components/SearchInput.vue";
-import SearchResult from "@/components/SearchResult.vue";
 export default {
   components: {
-    DetailContent,
-    SearchInput,
-    SearchResult,
     VueDrawingCanvas,
   },
   data() {
     return {
-      status: false,
-      searchStatue: false,
+      mainStatus: false,
+      sidebarStatus: false,
       initialImage: [
         {
           type: "dash",
@@ -240,11 +248,14 @@ export default {
       cy: 70,
       image: "",
       imageText: "",
+      imageTextBox: [],
       eraser: false,
       disabled: false,
       fillShape: false,
       line: 5,
       color: "#000000",
+      fontSize: 20,
+      fontColor: "#000000",
       strokeType: "dash",
       lineCap: "round",
       lineJoin: "round",
@@ -255,20 +266,11 @@ export default {
       text: "",
       textbox: [],
       dataBox: [],
+      sideDateBox: [],
+      detailBox: [],
       loadedText: [],
       loadedImage: [],
     };
-  },
-  created() {
-    // 임시로 로컬스토리지 사용
-    const downLoad = window.localStorage.getItem("dataBox");
-    this.dataBox = JSON.parse(downLoad);
-    if (this.dataBox.length > 0) {
-      for (let i = 0; i < this.dataBox.length; i++) {
-        this.loadedText.push(this.dataBox[i].textbox);
-        this.loadedImage.push(this.dataBox[i].src);
-      }
-    }
   },
   mounted() {
     if ("vue-drawing-canvas" in window.localStorage) {
@@ -276,10 +278,40 @@ export default {
         window.localStorage.getItem("vue-drawing-canvas")
       );
     }
+    // DB에서 데이터 받아오기
+    const data = [];
+    axios
+      .post("/memoLoad", {
+        userId: "testId",
+      })
+      .then(function (response) {
+        data.push(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    this.dataBox = data;
   },
   methods: {
-    detailContent: function () {
-      this.status = !this.status;
+    mainOnOff: function (data) {
+      if (this.sidebarStatus && this.mainStatus) {
+        this.sidebarStatus = !this.sidebarStatus;
+        this.mainStatus = !this.mainStatus;
+        this.detailBox = data;
+      }
+      if (this.sidebarStatus && !this.mainStatus) {
+        this.sidebarStatus = !this.sidebarStatus;
+        this.detailBox = data;
+      }
+    },
+    sidebarOnOff: function () {
+      this.sidebarStatus = !this.sidebarStatus;
+      // DB에서 받은 데이터를 최신순으로 10개까지 정렬
+      if (this.dataBox[0].length >= 10) {
+        this.sideDateBox = [...this.dataBox[0]].slice(-10).reverse();
+      } else {
+        this.sideDateBox = [...this.dataBox[0]].reverse();
+      }
     },
     offsetClick(event) {
       this.cx = event.offsetX;
@@ -295,14 +327,26 @@ export default {
       };
       // canvas에 text가 삽입된 img를 매번 로딩하기 위해서 최신 text 이미지를 덮어씌워준다.
     },
-    async fillmessage() {
+    clickRedraw() {
+      // 되돌리기 하는 경우 텍스트가 사라져보이는 것을 방지
+      const image_dum = document.createElement("img");
+      image_dum.src = this.imageText;
+      const canvas = document.getElementById("VueDrawingCanvas");
+      const context = canvas.getContext("2d");
+      image_dum.onload = () => {
+        context.drawImage(image_dum, 0, 0, 600, 400);
+        this.image = canvas.toDataURL();
+      };
+    },
+    fillmessage() {
       this.textbox.push(this.text);
       // text 기록
       const canvas_dum = document.createElement("canvas");
       canvas_dum.width = 600;
       canvas_dum.height = 400;
       const ctx = canvas_dum.getContext("2d");
-      ctx.font = "20pt BM YEONSUNG OTF";
+      ctx.font = this.fontSize + "pt BM";
+      ctx.fillStyle = this.fontColor;
       ctx.fillText(this.text, this.cx, this.cy);
       // 새로 DOM canvas 생성 후 fillText를 통해 text를 삽입한다.
       const loadedImage = canvas_dum.toDataURL();
@@ -325,6 +369,8 @@ export default {
         // 기존 text 이미지와 새로운 text 이미지를 저장한다.
         this.imageText = canvasText.toDataURL();
         // 합쳐진 이미지들을 저장한다.
+        this.imageTextBox.push(this.imageText);
+        // 되돌리기용
       };
 
       // 이미지 덮어씌우는 방법.
@@ -350,23 +396,36 @@ export default {
       this.cy += 30;
       // enter 입력 이후 줄바꿈 느낌으로
     },
+    // 텍스트 되돌리기는 보류
+    // deleteText() {
+    //   console.log(this.imageTextBox);
+    //   if (this.imageTextBox.length > 0) {
+    //     const last = this.imageTextBox.pop();
+    //     if (this.imageTextBox.length > 0) {
+    //       this.imageText = this.imageTextBox[this.imageTextBox.length - 1];
+    //       const image_dum = document.createElement("img");
+    //       image_dum.src = this.imageText;
+    //       const canvas = document.getElementById("VueDrawingCanvas");
+    //       const context = canvas.getContext("2d");
+    //       image_dum.onload = () => {
+    //         context.drawImage(image_dum, 0, 0, 600, 400);
+    //         this.image = canvas.toDataURL();
+    //       };
+    //     } else {
+    //       const image_dum = document.createElement("img");
+    //       image_dum.src = "";
+    //       const canvas = document.getElementById("VueDrawingCanvas");
+    //       const context = canvas.getContext("2d");
+    //       image_dum.onload = () => {
+    //         context.drawImage(image_dum, 0, 0, 600, 400);
+    //         this.image = canvas.toDataURL();
+    //       };
+    //     }
+    //   }
+    // },
     async setImage(event) {
       let URL = window.URL;
       this.backgroundImage = URL.createObjectURL(event.target.files[0]);
-      await this.$refs.VueCanvasDrawing.redraw();
-    },
-    async setWatermarkImage(event) {
-      let URL = window.URL;
-      this.watermark = {
-        type: "Image",
-        source: URL.createObjectURL(event.target.files[0]),
-        x: 0,
-        y: 0,
-        imageStyle: {
-          width: 600,
-          height: 400,
-        },
-      };
       await this.$refs.VueCanvasDrawing.redraw();
     },
     getCoordinate(event) {
@@ -374,28 +433,40 @@ export default {
       this.x = coordinates.x;
       this.y = coordinates.y;
     },
-    getStrokes() {
-      window.localStorage.setItem(
-        "vue-drawing-canvas",
-        JSON.stringify(this.$refs.VueCanvasDrawing.getAllStrokes())
-      );
-      alert(
-        "Strokes saved, reload your browser to see the canvas with previously saved image"
-      );
-    },
-    removeSavedStrokes() {
-      window.localStorage.removeItem("vue-drawing-canvas");
-      alert("Strokes cleared from local storage");
-    },
     imgSave() {
-      const memoDate = {
-        textbox: this.textbox,
-        src: this.image,
-      };
-      this.dataBox.push(memoDate);
-      // 임시로 로컬스토리지에 저장
-      const upLoad = JSON.stringify(this.dataBox);
-      window.localStorage.setItem("dataBox", upLoad);
+      if (window.confirm("저장하시겠습니까?")) {
+        // 저장할 데이터 폼
+        const data = {
+          userId: "testId", // 아이디
+          userPassword: "testPassword", // 비번
+          contentText: this.textbox, // 텍스트
+          contentImage: this.image, // 이미지
+          writingTime: new Date(), // 작성시각
+          ratingScore: 3, // 별점
+          recommendPoint: 10, // 추천수
+        };
+        // axios post로 저장할 데이터 서버로 전송
+        axios
+          .post("/userData", data)
+          .then(function (response) {
+            console.log(response.data);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        window.location.reload();
+        // this.$refs.VueCanvasDrawing.reset();
+        // this.image = "";
+        // this.imageText = "";
+        // this.cx = 50;
+        // this.cy = 50;
+        // this.fontSize = 20;
+        // this.fontColor = "#000000";
+      }
+    },
+    allClear() {
+      this.image = "";
+      this.imageText = "";
     },
   },
 };
@@ -405,16 +476,37 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,700&display=swap");
 body {
   font-family: "Roboto", sans-serif;
+  background-color: #f8f8f8;
+}
+.memo_title {
+  /* background-color: rgb(190, 236, 236);
+  height: 50px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 4px 4px 4px rgb(192, 192, 192); */
+  position: relative;
+}
+.sidebarOnOff {
+  position: absolute;
+  left: 70%;
+  bottom: 50px;
 }
 .source {
+  width: 1000px;
   display: flex;
   flex-direction: row;
 }
 .canvas-container {
   margin: 15px;
 }
+.button-container {
+  width: 350px;
+}
 .button-container > * {
   margin: 15px;
+}
+.background-container {
+  display: flex;
 }
 .input-text {
   width: 300px;
@@ -428,18 +520,13 @@ body {
 }
 .memo_container {
   display: flex;
+  justify-content: center;
   /* //--> 레이아웃 지정 */
   overflow: auto;
   height: 600px;
   /* 스크롤바 없애기 */
   -ms-overflow-style: none;
-}
-.memo_title {
-  background-color: rgb(190, 236, 236);
-  height: 50px;
-  border-radius: 15px;
-  margin-bottom: 20px;
-  box-shadow: 4px 4px 4px rgb(192, 192, 192);
+  position: relative;
 }
 .write_wrap {
   position: -webkit-sticky;
@@ -454,10 +541,24 @@ body {
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
-  width: 70%;
-  height: 600px;
+  width: 1000px;
+  height: 500px;
   padding: 5px;
+}
+.source {
+  background-color: #fcfcfc;
   border-radius: 15px;
+  box-shadow: 5px 5px 5px rgb(192, 192, 192);
+}
+.DetailContent {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  width: 1000px;
+  height: 500px;
+  border-radius: 20px;
+  box-shadow: 5px 5px 5px rgb(192, 192, 192);
+  background-color: azure;
 }
 .write_area {
   width: 99%;
@@ -468,7 +569,9 @@ body {
 }
 .sidebar {
   margin-left: 1%;
-  width: 29%;
+  width: 300px;
+  position: absolute;
+  left: 65%;
   /* height: 3000px; */
   /* overflow: auto; */
 }
@@ -483,7 +586,7 @@ body {
 }
 .a {
   height: 200px;
-  background-color: rgb(172, 148, 118);
+  background-color: rgb(255, 239, 219);
   margin-bottom: 20px;
   border-radius: 15px;
   box-shadow: 3px 3px 3px rgb(192, 192, 192);

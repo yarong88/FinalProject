@@ -67,7 +67,7 @@ nav a.router-link-exact-active {
   display: block;
   height: 80px;
   width: 100%;
-  background: rgb(240, 221, 196);
+  background: rgb(255, 255, 255);
 }
 .header_img {
   width: 50px;

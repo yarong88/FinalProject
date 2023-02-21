@@ -5,7 +5,6 @@
   <!-- <div class="wrap_memo">
     <div class="memo_title">메모</div>
     <div class="memo_container">
-      <DetailContent v-if="status" />
       <div v-if="!status" class="write_wrap">
         <div class="write_area">Main content</div>
         <div class="memo_tool">
@@ -65,13 +64,11 @@
 
 <script>
 /* eslint-disable */
-import DetailContent from "@/components/DetailContent.vue";
 import SearchResult from "@/components/SearchResult.vue";
 import SearchInput from "@/components/SearchInput.vue";
 export default {
   props: ["value"],
   components: {
-    DetailContent,
     SearchInput,
     SearchResult,
   },
@@ -82,9 +79,6 @@ export default {
     };
   },
   methods: {
-    detailContent: function () {
-      this.status = !this.status;
-    },
     updateInput: function (event) {
       this.$emit("input", event.target.value);
     },
