@@ -5,6 +5,7 @@
         ><img class="header_img" src="./assets/note.png" alt="" />
         <strong class="header_text">Easy Peasy Lemon Squeezy</strong>
       </router-link>
+      <router-link to="/post">포스트리스트</router-link>
       <router-link to="/HeadSearch"
         ><img
           v-if="st"
@@ -67,7 +68,7 @@ nav a.router-link-exact-active {
   display: block;
   height: 80px;
   width: 100%;
-  background: rgb(255, 255, 255);
+  background: rgb(243, 239, 224);
 }
 .header_img {
   width: 50px;

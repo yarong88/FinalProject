@@ -1,9 +1,8 @@
 const express = require("express");
-// const history = require("connect-history-api-fallback");
+const history = require("connect-history-api-fallback");
 // const { createProxyMiddleware } = require("http-proxy-middleware");
 const path = require("path");
 const logger = require("morgan");
-// var cors = require("cors");
 const app = express();
 const port = 3000;
 const { mongoose, UserData } = require("./mongoDB/mongoose.js"); // 몽고DB
@@ -11,7 +10,7 @@ const { mongoose, UserData } = require("./mongoDB/mongoose.js"); // 몽고DB
 // app.use(cors());
 const _path = path.join(__dirname, "/dist");
 console.log(_path);
-// app.use(history());
+app.use(history());
 app.use("/", express.static(_path));
 app.use(logger("tiny"));
 app.use(express.json()); // axios post로 받은 데이터 JSON 풀어주기

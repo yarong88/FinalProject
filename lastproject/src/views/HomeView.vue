@@ -9,6 +9,7 @@
       <!-- 메모장 시작 -->
       <div class="CanvasContent" v-if="!mainStatus">
         <div class="source">
+          <!-- 캔버스 시작 -->
           <div class="canvas-container">
             <p>Canvas:</p>
             <!-- 캔버스 컴포넌트 시작 -->
@@ -41,59 +42,181 @@
           </div>
           <!-- 캔버스 툴 시작 -->
           <div class="button-container">
+            <p>Tools :</p>
+            <!-- 선 버튼 시작 -->
             <div class="stroke-button-container">
+              <!-- 취소 버튼 -->
               <button
+                class="stroke-do-button"
                 type="button"
                 @click="clickRedraw"
                 @click.prevent="$refs.VueCanvasDrawing.undo()"
               >
-                작업취소
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="stroke-button-icon"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"
+                  />
+                  <path
+                    d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"
+                  />
+                </svg>
               </button>
+              <!-- 취소취소 버튼 -->
               <button
+                class="stroke-do-button"
                 type="button"
                 @click="clickRedraw"
                 @click.prevent="$refs.VueCanvasDrawing.redo()"
               >
-                취소취소
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="stroke-button-icon"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"
+                  />
+                  <path
+                    d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"
+                  />
+                </svg>
               </button>
+              <!-- 리셋 버튼 -->
               <button
+                class="stroke-do-button"
                 type="button"
                 @click.prevent="$refs.VueCanvasDrawing.reset()"
                 @click="allClear"
               >
-                모두삭제
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="stroke-button-icon"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+                  />
+                </svg>
               </button>
             </div>
+            <!-- 선 or 지우개 -->
             <div class="stroke-style-button-container">
-              <button type="button" @click.prevent="eraser = !eraser">
-                <span v-if="eraser"> Eraser </span>
-                <span v-else> Draw </span>
+              <button
+                class="stroke-change-button"
+                type="button"
+                @click.prevent="eraser = !eraser"
+              >
+                <span v-if="eraser">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="stroke-button-icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"
+                    />
+                  </svg>
+                </span>
+                <span v-else
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="stroke-button-icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                    />
+                  </svg>
+                </span>
               </button>
-              <select v-model="line">
+              <select class="storke-select" v-model="line">
                 <option v-for="n in 25" :key="'option-' + n" :value="n">
                   {{ n }}
                 </option>
               </select>
-              <input type="color" v-model="color" />
-              <select v-model="strokeType">
+              <input class="color-select" type="color" v-model="color" />
+              <select class="storke-select" v-model="strokeType">
                 <option value="dash">그리기</option>
-                <option value="line">선</option>
+                <option value="line">직선</option>
                 <option value="circle">원</option>
                 <option value="square">사각형</option>
                 <option value="triangle">삼각형</option>
               </select>
-              <button type="button" @click.prevent="fillShape = !fillShape">
-                <span v-if="fillShape"> 채우기 </span>
-                <span v-else> 선 </span>
+              <button
+                class="stroke-change-button"
+                type="button"
+                @click.prevent="fillShape = !fillShape"
+              >
+                <span v-if="fillShape">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="stroke-button-icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M8 16a6 6 0 0 0 6-6c0-1.655-1.122-2.904-2.432-4.362C10.254 4.176 8.75 2.503 8 0c0 0-6 5.686-6 10a6 6 0 0 0 6 6ZM6.646 4.646l.708.708c-.29.29-1.128 1.311-1.907 2.87l-.894-.448c.82-1.641 1.717-2.753 2.093-3.13Z"
+                    />
+                  </svg>
+                </span>
+                <span v-else>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="stroke-button-icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.21.8C7.69.295 8 0 8 0c.109.363.234.708.371 1.038.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8zm.413 1.021A31.25 31.25 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87l-.894-.448z"
+                    />
+                  </svg>
+                </span>
               </button>
             </div>
+            <!-- 선 버튼 끝 -->
             <div class="background-container">
               <div>
-                <p style="margin-bottom: 0">배경색상:</p>
+                <p style="margin-bottom: 0px; margin-top: 0px">배경색</p>
                 <input type="color" v-model="backgroundColor" />
               </div>
               <div>
-                <p style="margin-bottom: 0">이미지 업로드:</p>
+                <p style="margin-bottom: 0px; margin-top: 0px">
+                  이미지 업로드:
+                </p>
                 <input type="file" @change="setImage($event)" />
               </div>
             </div>
@@ -132,6 +255,9 @@
                   /><label for="rate5">⭐</label>
                 </fieldset>
               </form>
+              <button class="save_tool" @click="imgSave">
+                <img class="save_img" src="../assets/save.png" alt="" />save
+              </button>
             </div>
             <div class="input-text-container">
               <p>
@@ -157,9 +283,6 @@
                 autofocus
                 placeholder="Enter를 입력하면 출력됩니다."
               />
-              <button class="save_tool" @click="imgSave">
-                <img class="save_img" src="../assets/save.png" alt="" />save
-              </button>
             </div>
           </div>
           <!-- 캔버스 툴 끝 -->
@@ -169,18 +292,23 @@
       <!-- 메모장 확인 창 시작 -->
       <div class="DetailContent" v-if="mainStatus">
         <div class="source">
-          <div>
+          <div class="canvas-container">
+            <p>Canvas:</p>
             <img
+              class="detail-image"
               :src="detailBox.contentImage"
               alt=""
-              style="width: 100%; height: 100%"
+              style="width: 600px; height: 400px"
             />
           </div>
-          <div>
+          <div class="button-container">
+            <p>Details :</p>
             <div>
               {{ detailBox.contentText[0] }}
             </div>
-
+            <div>
+              {{ detailBox.contentText }}
+            </div>
             <div>{{ detailBox.writingTime }}</div>
             <span>{{ detailBox.ratingScore }}점</span>
             <span>추천 : {{ detailBox.recommendPoint }}</span>
@@ -279,39 +407,38 @@ export default {
       );
     }
     // DB에서 데이터 받아오기
-    const data = [];
     axios
       .post("/memoLoad", {
         userId: "testId",
       })
-      .then(function (response) {
-        data.push(response.data);
+      .then((response) => {
+        // 화살표 함수를 사용하면 this.를 사용할 수 있다.
+        this.dataBox = response.data;
+        // DB에서 받은 데이터를 최신순으로 10개까지 정렬
+        if (this.dataBox.length >= 10) {
+          this.sideDateBox = [...this.dataBox].slice(-10).reverse();
+        } else {
+          this.sideDateBox = [...this.dataBox].reverse();
+        }
       })
       .catch(function (error) {
         console.log(error);
       });
-    this.dataBox = data;
   },
   methods: {
     mainOnOff: function (data) {
-      if (this.sidebarStatus && this.mainStatus) {
+      if (this.sidebarStatus && !this.mainStatus) {
         this.sidebarStatus = !this.sidebarStatus;
         this.mainStatus = !this.mainStatus;
         this.detailBox = data;
       }
-      if (this.sidebarStatus && !this.mainStatus) {
+      if (this.sidebarStatus && this.mainStatus) {
         this.sidebarStatus = !this.sidebarStatus;
         this.detailBox = data;
       }
     },
     sidebarOnOff: function () {
       this.sidebarStatus = !this.sidebarStatus;
-      // DB에서 받은 데이터를 최신순으로 10개까지 정렬
-      if (this.dataBox[0].length >= 10) {
-        this.sideDateBox = [...this.dataBox[0]].slice(-10).reverse();
-      } else {
-        this.sideDateBox = [...this.dataBox[0]].reverse();
-      }
     },
     offsetClick(event) {
       this.cx = event.offsetX;
@@ -491,15 +618,8 @@ body {
   left: 70%;
   bottom: 50px;
 }
-.source {
-  width: 1000px;
-  display: flex;
-  flex-direction: row;
-}
-.canvas-container {
-  margin: 15px;
-}
 .button-container {
+  margin: 15px;
   width: 350px;
 }
 .button-container > * {
@@ -546,9 +666,15 @@ body {
   padding: 5px;
 }
 .source {
+  width: 1000px;
+  display: flex;
+  flex-direction: row;
   background-color: #fcfcfc;
   border-radius: 15px;
   box-shadow: 5px 5px 5px rgb(192, 192, 192);
+}
+.canvas-container {
+  margin: 15px;
 }
 .DetailContent {
   position: -webkit-sticky;
@@ -556,9 +682,43 @@ body {
   top: 0px;
   width: 1000px;
   height: 500px;
-  border-radius: 20px;
+  padding: 5px;
+}
+.detail-image {
   box-shadow: 5px 5px 5px rgb(192, 192, 192);
-  background-color: azure;
+}
+.stroke-do-button {
+  width: 50px;
+  margin: 1px;
+  background-color: rgb(118, 235, 231);
+  color: #000000;
+  border: #7e7e7e 1px solid;
+  border-radius: 10px;
+}
+.stroke-button-icon {
+  margin-top: 3px;
+}
+.stroke-style-button-container {
+  display: flex;
+  justify-content: center;
+}
+.stroke-change-button {
+  width: 50px;
+  margin: 1px;
+  background-color: rgb(149, 255, 251);
+  color: #000000;
+  border: #7e7e7e 1px solid;
+  border-radius: 10px;
+}
+.storke-select {
+  height: 26px;
+  margin: 1px;
+}
+.color-select {
+  width: 50px;
+  background-color: rgb(231, 231, 231);
+  border: #7e7e7e 1px solid;
+  border-radius: 10px;
 }
 .write_area {
   width: 99%;
@@ -611,6 +771,7 @@ body {
   right: 5em;
 }
 .star_tool {
+  display: flex;
   padding: 8px;
   height: 30px;
   width: 150px;
