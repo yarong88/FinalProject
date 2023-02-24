@@ -6,6 +6,10 @@ var userSchema = new Schema({
     user_pwd: String,
     user_nickname: String,
     user_email: String,
+
+    birth: String,
+    gender: String,
+    hobby: String,
     // id: Number, 
     create_date: { type: Date, default: Date.now }
 });

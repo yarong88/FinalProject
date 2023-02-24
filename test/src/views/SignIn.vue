@@ -1,12 +1,10 @@
 <template>
   <div id="SignIn">
     <h3>Sign In</h3>
-    <span>회원정보를 입력해주세요</span>
+    <span class="icon"><i class="fa fa-user fa-x" aria-hidden="true"></i></span>
+    <span> 회원정보를 입력해주세요</span>
     <div class="info_input">
       <div class="input_group">
-        <span class="icon"
-          ><i class="fa fa-user fa-2x" aria-hidden="true"></i
-        ></span>
         <input v-model="user.id" placeholder="ID" /> <br />
       </div>
       <input
@@ -16,13 +14,13 @@
         placeholder="password"
       /><br />
     </div>
-    <button v-on:click="login">login</button><br />
+    <br />
+    <input class="checkbox" type="checkbox" value="Id_save" />아이디저장
+    <input class="checkbox" type="checkbox" value="auto_login" />자동로그인
+    <router-link to="/SignIn/SignUp" class="signup_link">회원가입</router-link>
+    <br />
+    <button v-on:click="login" class="signin_btn">login</button><br />
     <!-- <a v-bind:href="url.signUpUrl"> Sign Up </a> -->
-    <br />
-    <input class="checkbox" type="checkbox" />아이디저장
-    <input class="checkbox" type="checkbox" />자동로그인
-    <router-link to="/SignIn/SignUp">회원가입</router-link>
-    <br />
     <hr style="color: rgb(128, 128, 128)" />
     <br />
     <div class="googlelogin" role="button" aria-disabled="false" tabindex="0">
@@ -89,6 +87,10 @@ export default {
 };
 </script>
 <style>
+h3 {
+  text-align: center;
+  margin: 50px;
+}
 .googlelogin {
   user-select: none;
   transition: 20ms ease-in 0s;
@@ -98,7 +100,7 @@ export default {
   justify-content: center;
   white-space: nowrap;
   height: 36px;
-  width: 330px;
+  width: 325px;
   border-radius: 4px;
   color: rgb(17, 17, 17);
   font-size: 14px;
@@ -134,7 +136,7 @@ export default {
   display: block;
 }
 .info_input {
-  margin-top: 70px;
+  margin-top: 10px;
 }
 input {
   display: inline-block;
@@ -144,5 +146,20 @@ input {
   border-bottom-width: 1;
   width: 100%;
   height: 40px;
+}
+.checkbox {
+  width: 20px;
+  height: 15px;
+  font-size: small;
+}
+.signup_link {
+  float: right;
+}
+.signin_btn {
+  width: 100%;
+  height: 40px;
+  margin-top: 30px;
+  font-size: 15px;
+  background-color: rgb(163, 163, 163);
 }
 </style>

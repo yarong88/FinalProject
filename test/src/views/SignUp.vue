@@ -1,6 +1,7 @@
 <template>
   <div id="SignUp">
     <h3>Sign Up</h3>
+    <span class="icon"><i class="fa fa-user fa-x" aria-hidden="true"></i></span>
     <span>회원정보를 입력해주세요</span>
     <div class="info_input">
       <div class="input_group">
@@ -151,7 +152,7 @@ export default {
   display: block;
 }
 .info_input {
-  margin-top: 70px;
+  margin-top: 30px;
 }
 .input {
   display: inline-block;
@@ -163,15 +164,9 @@ export default {
   height: 40px;
 }
 /* .icon {
-  position: relative;
+  display: flex;
   width: 40px;
   height: 40px;
-  border: 1px solid #000;
-}
-i {
-  position: absolute;
-  top: 50%;
-  left: 50%;
 } */
 .signup_btn {
   width: 100%;
