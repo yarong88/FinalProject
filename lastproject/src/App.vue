@@ -26,6 +26,8 @@
     </div>
   </nav>
   <router-view />
+  <hr />
+  <div class="footer">Footer</div>
 </template>
 
 <script>
@@ -85,5 +87,9 @@ nav a.router-link-exact-active {
   height: 30px;
   margin: 25px 30px;
   float: right;
+}
+.footer {
+  background: #777777;
+  height: 80px;
 }
 </style>

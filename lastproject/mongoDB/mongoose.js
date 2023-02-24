@@ -1,8 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
-const USER = "memoProject";
-const PWD = 12345;
-const HOST = "127.0.0.1:27017";
+const USER = process.env.dbid;
+const PWD = process.env.dbpw;
+const HOST = process.env.dbhost;
 const DB = "MemoProject";
 const mongodbURL = `mongodb://${USER}:${PWD}@${HOST}/${DB}`;
 // mongoose.set('useFindAndModify', false)

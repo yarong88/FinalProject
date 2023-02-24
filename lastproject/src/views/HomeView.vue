@@ -340,9 +340,6 @@
       <!-- 사이드 바 끝 -->
     </div>
   </div>
-
-  <hr />
-  <div class="footer">Footer</div>
 </template>
 
 <script>
@@ -581,7 +578,7 @@ export default {
           .catch(function (error) {
             console.log(error);
           });
-        window.location.reload();
+        // window.location.reload();
         // this.$refs.VueCanvasDrawing.reset();
         // this.image = "";
         // this.imageText = "";
@@ -820,9 +817,5 @@ body {
   height: 20px;
   background-color: #cccccc;
   border-radius: 8px;
-}
-.footer {
-  background: #777777;
-  height: 80px;
 }
 </style>

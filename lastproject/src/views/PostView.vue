@@ -57,7 +57,7 @@ export default {
       }
     },
     handleScroll() {
-      console.log(window.pageYOffset);
+      // console.log(window.pageYOffset);
       this.scrollTop = window.pageYOffset;
       if (this.scrollTop > 4000) {
         this.dataLoad(20);

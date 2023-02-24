@@ -13,7 +13,10 @@ console.log(_path);
 app.use(history());
 app.use("/", express.static(_path));
 app.use(logger("tiny"));
-app.use(express.json()); // axios post로 받은 데이터 JSON 풀어주기
+// app.use(express.json()); // axios post로 받은 데이터 JSON 풀어주기
+// 기본값으로는 json파서와 urlencoded 파서는 100kb만 파싱 할 수 있도록 설정
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ limit: "100mb", extended: false }));
 
 const dbSave = async function (dbData) {
   const _data = {
