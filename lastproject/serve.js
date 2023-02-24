@@ -5,7 +5,7 @@ const path = require("path");
 const logger = require("morgan");
 const app = express();
 const port = 3000;
-const { mongoose, UserData } = require("./mongoDB/mongoose.js"); // 몽고DB
+const UserData = require("./mongoDB/mongoose.js"); // 몽고DB
 
 // app.use(cors());
 const _path = path.join(__dirname, "/dist");

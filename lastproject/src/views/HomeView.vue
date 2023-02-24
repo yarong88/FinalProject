@@ -520,33 +520,6 @@ export default {
       this.cy += 30;
       // enter 입력 이후 줄바꿈 느낌으로
     },
-    // 텍스트 되돌리기는 보류
-    // deleteText() {
-    //   console.log(this.imageTextBox);
-    //   if (this.imageTextBox.length > 0) {
-    //     const last = this.imageTextBox.pop();
-    //     if (this.imageTextBox.length > 0) {
-    //       this.imageText = this.imageTextBox[this.imageTextBox.length - 1];
-    //       const image_dum = document.createElement("img");
-    //       image_dum.src = this.imageText;
-    //       const canvas = document.getElementById("VueDrawingCanvas");
-    //       const context = canvas.getContext("2d");
-    //       image_dum.onload = () => {
-    //         context.drawImage(image_dum, 0, 0, 600, 400);
-    //         this.image = canvas.toDataURL();
-    //       };
-    //     } else {
-    //       const image_dum = document.createElement("img");
-    //       image_dum.src = "";
-    //       const canvas = document.getElementById("VueDrawingCanvas");
-    //       const context = canvas.getContext("2d");
-    //       image_dum.onload = () => {
-    //         context.drawImage(image_dum, 0, 0, 600, 400);
-    //         this.image = canvas.toDataURL();
-    //       };
-    //     }
-    //   }
-    // },
     async setImage(event) {
       let URL = window.URL;
       this.backgroundImage = URL.createObjectURL(event.target.files[0]);
@@ -572,10 +545,10 @@ export default {
         // axios post로 저장할 데이터 서버로 전송
         axios
           .post("/userData", data)
-          .then(function (response) {
+          .then((response) => {
             console.log(response.data);
           })
-          .catch(function (error) {
+          .catch((error) => {
             console.log(error);
           });
         // window.location.reload();

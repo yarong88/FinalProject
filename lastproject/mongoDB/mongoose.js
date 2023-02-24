@@ -14,4 +14,4 @@ mongoose
   .then(() => console.log("connection succesful"))
   .catch((err) => console.error(err));
 const UserData = require("./dataSchema.js");
-module.exports = { mongoose, UserData };
+module.exports = UserData;
