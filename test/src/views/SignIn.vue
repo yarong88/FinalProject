@@ -5,9 +5,10 @@
     <span> 회원정보를 입력해주세요</span>
     <div class="info_input">
       <div class="input_group">
-        <input v-model="user.id" placeholder="ID" /> <br />
+        <input class="signin_input" v-model="user.id" placeholder="ID" /> <br />
       </div>
       <input
+        class="signin_input"
         v-model="user.password"
         type="password"
         password-reveal
@@ -50,8 +51,9 @@
 </template>
 
 <script>
+/* eslint-disable */
+import axios from "axios";
 export default {
-  /* eslint-disable */
   data: function () {
     return {
       user: {
@@ -64,25 +66,30 @@ export default {
     };
   },
   methods: {
-    // login: function (event) {
-    //   this.$http
-    //     .post("/api/SignIn/checkLogin", {
-    //       user: this.user,
-    //     })
-    //     .then(
-    //       (response) => {
-    //         //로그인 성공
-    //         alert("success login");
-    //       },
-    //       (error) => {
-    //         // error 를 보여줌
-    //         alert(error.response.data.error);
-    //       }
-    //     )
-    //     .catch((error) => {
-    //       alert(error);
-    //     });
-    // },
+    login: function () {
+      console.log(this.user.id);
+      axios
+        .get("/SignIn/" + this.user.id)
+        .then((res) => (this.data2 = res.data));
+      // axios
+      //   .post("/SignIn/", {
+      //     user_id: this.user.id,
+      //     user_pwd: this.user.password,
+      //   })
+      //   .then(
+      //     (response) => {
+      //       //로그인 성공
+      //       alert("success login");
+      //     },
+      //     (error) => {
+      //       // error 를 보여줌
+      //       alert(error.response.data.error);
+      //     }
+      //   )
+      //   .catch((error) => {
+      //     alert(error);
+      //   });
+    },
   },
 };
 </script>
@@ -138,7 +145,7 @@ h3 {
 .info_input {
   margin-top: 10px;
 }
-input {
+.signin_input {
   display: inline-block;
   border-left-width: 0;
   border-right-width: 0;
@@ -161,5 +168,6 @@ input {
   margin-top: 30px;
   font-size: 15px;
   background-color: rgb(163, 163, 163);
+  cursor: pointer;
 }
 </style>

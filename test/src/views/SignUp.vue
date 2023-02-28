@@ -9,12 +9,16 @@
           ><i class="fa fa-user fa-2x" aria-hidden="true"></i
         ></span>
         <input
-          class="input"
+          ref="id_input"
+          class="signup_input"
           v-model="user.id"
-          placeholder="ID"
+          placeholder=" ID"
           @blur="idValid"
         />
-        <div v-if="!idValidFlag">유효하지 않은 아이디 입니다.</div>
+        <button class="checkValid" @click="idc">중복검사</button>
+        <div class="valid_text" v-if="!idValidFlag">
+          유효하지 않은 아이디 입니다.
+        </div>
         <br />
       </div>
       <div class="input_group">
@@ -22,10 +26,10 @@
           ><i class="fa fa-lock fa-2x" aria-hidden="true"></i
         ></span>
         <input
-          class="input"
+          class="signup_input"
           v-model="user.password"
           type="password"
-          placeholder="password"
+          placeholder=" password"
           @blur="pwdValid"
         />
         <div v-if="!pwdValidFlag">유효하지 않은 비밀번호 입니다.</div>
@@ -36,10 +40,10 @@
           <i class="fa fa-lock fa-2x" aria-hidden="true"></i
         ></span>
         <input
-          class="input"
+          class="signup_input"
           v-model="pwdCheck"
           type="password"
-          placeholder="password - confirm"
+          placeholder=" password - confirm"
           @blur="pwdCheckValid"
         />
         <div v-if="!pwdCheckFlag">비밀번호가 동일하지 않습니다.</div>
@@ -48,18 +52,24 @@
       <div class="input_group">
         <span class="icon"
           ><i class="fa fa-user fa-2x" aria-hidden="true"></i></span
-        ><input class="input" v-model="user.nickname" placeholder="nickname" />
+        ><input
+          class="signup_input"
+          v-model="user.nickname"
+          placeholder=" nickname"
+        />
+        <button class="checkValid" @click="nickc">중복검사</button>
         <br />
       </div>
       <div class="input_group">
         <span class="icon"
           ><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></span
         ><input
-          class="input"
+          class="signup_input"
           type="email"
           v-model="user.email"
-          placeholder="email"
+          placeholder=" email"
         />
+        <button class="checkValid" @click="emailc">중복검사</button>
         <br />
       </div>
     </div>
@@ -69,14 +79,14 @@
 
 <script>
 /* eslint-disable */
-// import axios from 'axios';
+import axios from "axios";
 export default {
   data() {
     return {
       user: {
         id: "",
         password: "",
-        nickaname: "",
+        nickname: "",
         email: "",
         // birth: "", //스피너로 바꾸기
         // gender: "", //라디오 버튼으로 바꾸기
@@ -114,24 +124,64 @@ export default {
         this.pwdCheckFlag = false;
       }
     },
-    SignUp: function (event) {
-      if (!this.idValid || !this.passwordValidFlag || !this.passwordCheckFlag) {
-        alert("유효성 확인");
-        return;
-      }
-      this.$http
-        .post("./views/SignIn/SignUp", {
+    SignUp: function () {
+      // if (!this.idValid || !this.passwordValidFlag || !this.passwordCheckFlag) {
+      //   alert("유효성 확인");
+      //   return;
+      // }
+      axios
+        .post("/SignUp", {
           //axios 사용
-          user: this.user,
+          user_id: this.user.id,
+          user_pwd: this.user.password,
+          user_nickname: this.user.nickname,
+          user_email: this.user.email,
         })
         .then((response) => {
-          if (response.data.result === 0) {
-            alert("Error, please, try again");
+          alert("SignUp Success");
+          this.$router.push("./"); // Login 페이지로 보내줌
+        })
+        .catch(function (error) {
+          alert("error");
+        });
+    },
+    idc: function () {
+      console.log(this.user.id);
+      axios.get("/SignIn/SignUp/idc/" + this.user.id).then((response) => {
+        if (response.data == "가능") {
+          const a = confirm("사용가능한 아이디 입니다 사용하시겠습니까?");
+          console.log(a);
+          if (a) {
+            console.log("test");
+            this.$refs.id_input.readOnly = true;
+            // document.getElementsByID("id_input").readOnly = true;
           }
-          if (response.data.result === 1) {
-            alert("Success");
-            this.$router.push("./views/SignIn"); // Login 페이지로 보내줌
-          }
+        } else {
+          alert("id중복입니다! 사용불가");
+        }
+      });
+
+      // axios
+      //   .post("/idc", {
+      //     user_id: this.user.id,
+      //   })
+      //   .then((res) => alert("값 넘어감?"));
+    },
+    nickc: function () {
+      axios
+        .get("/nickc/" + this.user.nickname)
+        .then((response) => {
+          alert("SignUp Success");
+        })
+        .catch(function (error) {
+          alert("error");
+        });
+    },
+    emailc: function () {
+      axios
+        .get("/emailc/" + this.user.email)
+        .then((response) => {
+          alert("SignUp Success");
         })
         .catch(function (error) {
           alert("error");
@@ -142,26 +192,27 @@ export default {
 </script>
 <style>
 #SignUp {
-  width: 350px;
+  width: 400px;
   height: auto;
   position: absolute;
   top: 10%;
   left: 40%;
 }
 .input_group {
-  display: block;
+  display: inline;
 }
 .info_input {
   margin-top: 30px;
 }
-.input {
-  display: inline-block;
+.signup_input {
+  display: inline;
   border-left-width: 0;
   border-right-width: 0;
   border-top-width: 0;
   border-bottom-width: 1;
-  width: 100%;
+  width: 80%;
   height: 40px;
+  margin-top: 20px;
 }
 /* .icon {
   display: flex;
@@ -173,5 +224,14 @@ export default {
   height: 40px;
   margin-top: 20px;
   background-color: rgb(163, 163, 163);
+  cursor: pointer;
+}
+.checkValid {
+  width: 10%;
+  height: 40px;
+  font-size: 5px;
+  cursor: pointer;
+  float: right;
+  margin-top: 20px;
 }
 </style>
