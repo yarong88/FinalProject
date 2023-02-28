@@ -1,5 +1,4 @@
 <template>
-  <hr />
   <div class="wrap_memo">
     <div class="memo_title">
       <!-- 사이드 바 출력 버튼 -->
@@ -220,6 +219,7 @@
                 <input type="file" @change="setImage($event)" />
               </div>
             </div>
+            <!-- 별점 및 이미지 저장 -->
             <div class="star_tool">
               <form name="myform" id="myform" method="post" action="./save">
                 <fieldset>
@@ -255,10 +255,12 @@
                   /><label for="rate5">⭐</label>
                 </fieldset>
               </form>
+              <!-- 이미지 저장 -->
               <button class="save_tool" @click="imgSave">
                 <img class="save_img" src="../assets/save.png" alt="" />save
               </button>
             </div>
+            <!-- 별점 끝 -->
             <div class="input-text-container">
               <p>
                 현재 글쓰기 시작점은 {{ cx }},{{ cy }}입니다.
@@ -312,6 +314,8 @@
             <div>{{ detailBox.writingTime }}</div>
             <span>{{ detailBox.ratingScore }}점</span>
             <span>추천 : {{ detailBox.recommendPoint }}</span>
+            <button @click="imgModify(detailBox)">수정하기</button>
+            <button @click="imgDelete(detailBox)">삭제하기</button>
           </div>
         </div>
       </div>
@@ -389,10 +393,12 @@ export default {
       watermark: null,
       additionalImages: [],
       text: "",
-      textbox: [],
+      textBox: [],
+      finalText: "",
       dataBox: [],
       sideDateBox: [],
       detailBox: [],
+      idModify: "",
       loadedText: [],
       loadedImage: [],
     };
@@ -423,6 +429,7 @@ export default {
       });
   },
   methods: {
+    // 메모 창과 수정 창 OnOff
     mainOnOff: function (data) {
       if (this.sidebarStatus && !this.mainStatus) {
         this.sidebarStatus = !this.sidebarStatus;
@@ -434,9 +441,11 @@ export default {
         this.detailBox = data;
       }
     },
+    // 사이드바 OnOff
     sidebarOnOff: function () {
       this.sidebarStatus = !this.sidebarStatus;
     },
+    // 글쓰기 시작할 포인트 잡기
     offsetClick(event) {
       this.cx = event.offsetX;
       this.cy = event.offsetY;
@@ -451,6 +460,7 @@ export default {
       };
       // canvas에 text가 삽입된 img를 매번 로딩하기 위해서 최신 text 이미지를 덮어씌워준다.
     },
+    // 텍스트 이미지 계속 유지하기 위해
     clickRedraw() {
       // 되돌리기 하는 경우 텍스트가 사라져보이는 것을 방지
       const image_dum = document.createElement("img");
@@ -462,8 +472,9 @@ export default {
         this.image = canvas.toDataURL();
       };
     },
+    // Canvas에 글쓰기
     fillmessage() {
-      this.textbox.push(this.text);
+      this.textBox.push(this.text);
       // text 기록
       const canvas_dum = document.createElement("canvas");
       canvas_dum.width = 600;
@@ -520,50 +531,99 @@ export default {
       this.cy += 30;
       // enter 입력 이후 줄바꿈 느낌으로
     },
+    // 이미지 불러오기 (배경화면으로)
     async setImage(event) {
       let URL = window.URL;
       this.backgroundImage = URL.createObjectURL(event.target.files[0]);
       await this.$refs.VueCanvasDrawing.redraw();
     },
+    // Canvas 내에 마우스 위치 기억하기
     getCoordinate(event) {
       let coordinates = this.$refs.VueCanvasDrawing.getCoordinates(event);
       this.x = coordinates.x;
       this.y = coordinates.y;
     },
-    imgSave() {
-      if (window.confirm("저장하시겠습니까?")) {
-        // 저장할 데이터 폼
-        const data = {
-          userId: "testId", // 아이디
-          userPassword: "testPassword", // 비번
-          contentText: this.textbox, // 텍스트
-          contentImage: this.image, // 이미지
-          writingTime: new Date(), // 작성시각
-          ratingScore: 3, // 별점
-          recommendPoint: 10, // 추천수
-        };
-        // axios post로 저장할 데이터 서버로 전송
-        axios
-          .post("/userData", data)
-          .then((response) => {
-            console.log(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        // window.location.reload();
-        // this.$refs.VueCanvasDrawing.reset();
-        // this.image = "";
-        // this.imageText = "";
-        // this.cx = 50;
-        // this.cy = 50;
-        // this.fontSize = 20;
-        // this.fontColor = "#000000";
+    // 텍스트 합치기
+    mergeText() {
+      if (this.textBox.length) {
+        for (let i = 0; i < this.textBox.length; i++) {
+          this.finalText += this.textBox[i] + " ";
+        }
       }
     },
+    // 저장
+    imgSave() {
+      if (window.confirm("저장하시겠습니까?")) {
+        this.mergeText(); // 텍스트 합치기
+        if (this.idModify) {
+          // update할 데이터 폼
+          const data = {
+            _id: this.idModify, // 업데이트 하기 위한 키
+            userId: "testId", // 아이디
+            userPassword: "testPassword", // 비번
+            contentText: this.textBox, // 텍스트
+            contentLongText: this.finalText, // 합친 텍스트
+            contentImage: this.image, // 이미지
+            writingTime: new Date(), // 작성시각
+            ratingScore: 3, // 별점
+            recommendPoint: 10, // 추천수
+          };
+          // axios post로 저장할 데이터 서버로 전송
+          axios
+            .post("/memoUpdate", data)
+            .then((response) => {
+              console.log(response.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          // 저장할 데이터 폼
+          const data = {
+            userId: "testId", // 아이디
+            userPassword: "testPassword", // 비번
+            contentText: this.textBox, // 텍스트
+            contentLongText: this.finalText, // 합친 텍스트
+            contentImage: this.image, // 이미지
+            writingTime: new Date(), // 작성시각
+            ratingScore: 3, // 별점
+            recommendPoint: 10, // 추천수
+          };
+          // axios post로 서버 속 데이터 업데이트
+          axios
+            .post("/memoSave", data)
+            .then((response) => {
+              console.log(response.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+        window.location.reload(); // 리셋할 방법이 뭐 있을까?
+      }
+    },
+    // 삭제
+    imgDelete(data) {
+      if (window.confirm("삭제하시겠습니까?")) {
+        this.mainStatus = !this.mainStatus;
+        axios
+          .get("/memoDelete/" + data._id)
+          .then((res) => console.log(res.data));
+        window.location.reload(); // 리셋
+      }
+    },
+    // 수정하기 위해 불러오기
+    async imgModify(data) {
+      this.mainStatus = !this.mainStatus;
+      this.idModify = data._id;
+      this.backgroundImage = data.contentImage;
+      await this.$refs.VueCanvasDrawing.redraw();
+    },
+    // reset에 기능 추가
     allClear() {
       this.image = "";
       this.imageText = "";
+      this.finalText = "";
     },
   },
 };
@@ -637,6 +697,7 @@ body {
 }
 .source {
   width: 1000px;
+  height: 500px;
   display: flex;
   flex-direction: row;
   background-color: #fcfcfc;

@@ -1,10 +1,7 @@
 <template>
-  <div class="search_text">
-    <h2>'{{ searchResult }}' (으)로 검색한 결과입니다.</h2>
-  </div>
-  <div class="result_wrap">
-    <div class="inner_wrap">
-      <div class="result_box" v-for="data in dataBox" v-bind:key="data">
+  <div class="recentMemoContainer">
+    <div class="innerContainer">
+      <div class="recentMemo" v-for="data in recentMemo" v-bind:key="data">
         <div style="font-size: large; margin: 10px">
           {{ data.contentText[0] }}
         </div>
@@ -19,7 +16,7 @@
 /* eslint-disable */
 export default {
   name: "app",
-  props: ["searchResult", "dataBox"],
+  props: ["recentMemo"],
   data() {
     return {};
   },
@@ -28,11 +25,11 @@ export default {
 </script>
 
 <style>
-.result_wrap {
+.recentMemoContainer {
   height: auto;
   width: 100%;
 }
-.inner_wrap {
+.innerContainer {
   transform: translate(3%, 0);
   display: grid;
   width: 95%;
@@ -40,11 +37,11 @@ export default {
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 400px;
-  background-color: antiquewhite;
+  background-color: rgb(179, 179, 179);
 }
-.result_box {
+.recentMemo {
   height: 200px;
-  background-color: rgb(255, 239, 219);
+  background-color: rgb(230, 230, 230);
   margin-bottom: 20px;
   border-radius: 15px;
   box-shadow: 3px 3px 3px rgb(192, 192, 192);

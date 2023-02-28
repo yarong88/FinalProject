@@ -25,6 +25,7 @@
       </router-link>
     </div>
   </nav>
+  <hr />
   <router-view />
   <hr />
   <div class="footer">Footer</div>

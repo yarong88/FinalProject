@@ -6,13 +6,12 @@
       v-bind:key="i"
     />
   </div>
-  <!-- <div v-for="post of postList" v-bind:key="post">{{ post }}</div> -->
 </template>
 
 <script>
 /* eslint-disable */
 import axios from "axios";
-import postItem from "../components/postItem.vue";
+import postItem from "../components/PostItem.vue";
 
 export default {
   name: "postList",
