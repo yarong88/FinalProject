@@ -16,11 +16,11 @@
           @blur="idValid"
         />
         <button class="checkValid" @click="idc">중복검사</button>
-        <img
+        <!-- <img
           src="../assets/check.png"
           id="id_check_sucess"
           style="display: none"
-        />
+        /> -->
         <div class="valid_text" v-if="!idValidFlag">
           유효하지 않은 아이디 입니다.
         </div>
