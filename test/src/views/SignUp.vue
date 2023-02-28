@@ -16,6 +16,11 @@
           @blur="idValid"
         />
         <button class="checkValid" @click="idc">중복검사</button>
+        <img
+          src="../assets/check.png"
+          id="id_check_sucess"
+          style="display: none"
+        />
         <div class="valid_text" v-if="!idValidFlag">
           유효하지 않은 아이디 입니다.
         </div>
@@ -53,6 +58,7 @@
         <span class="icon"
           ><i class="fa fa-user fa-2x" aria-hidden="true"></i></span
         ><input
+          id="nick_input"
           class="signup_input"
           v-model="user.nickname"
           placeholder=" nickname"
@@ -64,12 +70,17 @@
         <span class="icon"
           ><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></span
         ><input
+          id="email_input"
           class="signup_input"
           type="email"
           v-model="user.email"
           placeholder=" email"
+          @blur="emailCheckValid"
         />
         <button class="checkValid" @click="emailc">중복검사</button>
+        <div class="valid_text" v-if="!emailValidFlag">
+          유효하지 않은 이메일 입니다.
+        </div>
         <br />
       </div>
     </div>
@@ -96,6 +107,7 @@ export default {
       idValidFlag: true,
       pwdValidFlag: true,
       pwdCheckFlag: true,
+      emailValidFlag: true,
     };
   },
   methods: {
@@ -124,6 +136,13 @@ export default {
         this.pwdCheckFlag = false;
       }
     },
+    emailCheckValid() {
+      if (/^[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(this.user.email)) {
+        this.emailValidFlag = true;
+      } else {
+        this.emailValidFlag = false;
+      }
+    },
     SignUp: function () {
       // if (!this.idValid || !this.passwordValidFlag || !this.passwordCheckFlag) {
       //   alert("유효성 확인");
@@ -149,43 +168,46 @@ export default {
       console.log(this.user.id);
       axios.get("/SignIn/SignUp/idc/" + this.user.id).then((response) => {
         if (response.data == "가능") {
-          const a = confirm("사용가능한 아이디 입니다 사용하시겠습니까?");
+          const a = confirm("사용가능한 아이디입니다. 사용하시겠습니까?");
           console.log(a);
           if (a) {
-            console.log("test");
             this.$refs.id_input.readOnly = true;
-            // document.getElementsByID("id_input").readOnly = true;
+            // $(".username_input").attr("check_result", "success");
+            // $("#id_check_sucess").show();
+            // $(".id_overlap_button").hide();
           }
         } else {
           alert("id중복입니다! 사용불가");
         }
       });
-
-      // axios
-      //   .post("/idc", {
-      //     user_id: this.user.id,
-      //   })
-      //   .then((res) => alert("값 넘어감?"));
     },
     nickc: function () {
       axios
-        .get("/nickc/" + this.user.nickname)
+        .get("/SignIn/SignUp/nickc/" + this.user.nickname)
         .then((response) => {
-          alert("SignUp Success");
-        })
-        .catch(function (error) {
-          alert("error");
+          if (response.data == "가능") {
+            const a = confirm("사용가능한 닉네임입니다. 사용하시겠습니까?");
+            console.log(a);
+            if (a) {
+              this.$refs.nick_input.readOnly = true;
+            }
+          } else {
+            alert("닉네임 중복입니다! 사용불가");
+          }
         });
     },
     emailc: function () {
-      axios
-        .get("/emailc/" + this.user.email)
-        .then((response) => {
-          alert("SignUp Success");
-        })
-        .catch(function (error) {
-          alert("error");
-        });
+      axios.get("/SignIn/SignUp/emailc/" + this.user.email).then((response) => {
+        if (response.data == "가능") {
+          const a = confirm("사용가능한 이메일입니다. 사용하시겠습니까?");
+          console.log(a);
+          if (a) {
+            this.$refs.email_input.readOnly = true;
+          }
+        } else {
+          alert("이메일중복입니다! 사용불가");
+        }
+      });
     },
   },
 };
