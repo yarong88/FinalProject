@@ -67,29 +67,51 @@ export default {
   },
   methods: {
     login: function () {
+      // console.log(this.user.id);
+      // console.log(this.user.password);
+
+      // axios.get("/SignIn/" + this.user.id + this.user.password).then((res) => {
+      //   if ((res.data = "성공")) {
+      //     alert("로그인 성공");
+      //   } else {
+      //     alert("로그인 실패");
+      //   }
       console.log(this.user.id);
+      console.log(this.user.password);
       axios
-        .get("/SignIn/" + this.user.id)
-        .then((res) => (this.data2 = res.data));
-      // axios
-      //   .post("/SignIn/", {
-      //     user_id: this.user.id,
-      //     user_pwd: this.user.password,
-      //   })
-      //   .then(
-      //     (response) => {
-      //       //로그인 성공
-      //       alert("success login");
-      //     },
-      //     (error) => {
-      //       // error 를 보여줌
-      //       alert(error.response.data.error);
-      //     }
-      //   )
-      //   .catch((error) => {
-      //     alert(error);
-      //   });
+        .post("/SignIn", {
+          user_id: this.user.id,
+          user_pwd: this.user.password,
+        })
+        .then((response) => {
+          if (response.data == "wrong_id") {
+            alert("아이디 틀림");
+          } else if (response.data == "wrong_pwd") {
+            alert("비번 틀림");
+          } else if (response.data == "login_success") {
+            alert("로그인 성공");
+            this.$router.push("/"); // 메인 페이지로 보내줌
+          }
+        });
     },
+    // axios
+    //   .post("/SignIn/", {
+    //     user_id: this.user.id,
+    //     user_pwd: this.user.password,
+    //   })
+    //   .then(
+    //     (response) => {
+    //       //로그인 성공
+    //       alert("success login");
+    //     },
+    //     (error) => {
+    //       // error 를 보여줌
+    //       alert(error.response.data.error);
+    //     }
+    //   )
+    //   .catch((error) => {
+    //     alert(error);
+    //   });
   },
 };
 </script>

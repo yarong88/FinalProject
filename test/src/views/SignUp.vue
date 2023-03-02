@@ -13,16 +13,19 @@
           class="signup_input"
           v-model="user.id"
           placeholder=" ID"
-          @blur="idValid"
+          @keyup="idValid"
         />
-        <button class="checkValid" @click="idc">중복검사</button>
-        <!-- <img
-          src="../assets/check.png"
-          id="id_check_sucess"
-          style="display: none"
-        /> -->
+        <button
+          :disabled="!idValidFlag"
+          id="idvalid_btn"
+          class="checkValid"
+          @click="idc"
+        >
+          중복검사
+        </button>
         <div class="valid_text" v-if="!idValidFlag">
-          유효하지 않은 아이디 입니다.
+          유효하지 않은 아이디 입니다. <br />
+          영문과 숫자만 사용할 수 있습니다.
         </div>
         <br />
       </div>
@@ -31,13 +34,18 @@
           ><i class="fa fa-lock fa-2x" aria-hidden="true"></i
         ></span>
         <input
+          ref="pwd_input"
           class="signup_input"
           v-model="user.password"
           type="password"
           placeholder=" password"
-          @blur="pwdValid"
+          @keyup="pwdValid"
         />
-        <div v-if="!pwdValidFlag">유효하지 않은 비밀번호 입니다.</div>
+        <div class="valid_text" v-if="!pwdValidFlag">
+          유효하지 않은 비밀번호 입니다. <br />대문자 / 소문자 / 숫자가 1개 이상
+          존재해야합니다. <br />
+          또한, 8자이상 16자 이하여야합니다.
+        </div>
         <br />
       </div>
       <div class="input_group">
@@ -49,42 +57,74 @@
           v-model="pwdCheck"
           type="password"
           placeholder=" password - confirm"
-          @blur="pwdCheckValid"
+          @keyup="pwdCheckValid"
         />
-        <div v-if="!pwdCheckFlag">비밀번호가 동일하지 않습니다.</div>
+        <div class="valid_text" v-if="!pwdCheckFlag">
+          비밀번호가 동일하지 않습니다.
+        </div>
       </div>
       <br />
       <div class="input_group">
         <span class="icon"
           ><i class="fa fa-user fa-2x" aria-hidden="true"></i></span
         ><input
-          id="nick_input"
+          ref="nick_input"
           class="signup_input"
           v-model="user.nickname"
           placeholder=" nickname"
+          @keyup="nickValid"
         />
-        <button class="checkValid" @click="nickc">중복검사</button>
+        <button
+          :disabled="!nickValidFlag"
+          id="nickvalid_btn"
+          class="checkValid"
+          @click="nickc"
+        >
+          중복검사
+        </button>
+        <div class="valid_text" v-if="!nickValidFlag">
+          유효하지 않은 닉네임입니다. <br />영문과 숫자만 사용할 수 있습니다.
+        </div>
         <br />
       </div>
       <div class="input_group">
         <span class="icon"
           ><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></span
         ><input
-          id="email_input"
+          ref="email_input"
           class="signup_input"
           type="email"
           v-model="user.email"
           placeholder=" email"
-          @blur="emailCheckValid"
+          @keyup="emailCheckValid"
         />
-        <button class="checkValid" @click="emailc">중복검사</button>
+        <button
+          :disabled="!emailValidFlag"
+          id="emailvalid_btn"
+          class="checkValid"
+          @click="emailc"
+        >
+          중복검사
+        </button>
         <div class="valid_text" v-if="!emailValidFlag">
           유효하지 않은 이메일 입니다.
         </div>
         <br />
       </div>
     </div>
-    <button class="signup_btn" v-on:click="SignUp">SignUp</button>
+    <button
+      :disabled="
+        !user.email ||
+        !user.password ||
+        !pwdCheck ||
+        !user.nickname ||
+        !user.email
+      "
+      class="signup_btn"
+      v-on:click="SignUp"
+    >
+      SignUp
+    </button>
   </div>
 </template>
 
@@ -107,8 +147,12 @@ export default {
       idValidFlag: true,
       pwdValidFlag: true,
       pwdCheckFlag: true,
+      nickValidFlag: true,
       emailValidFlag: true,
     };
+  },
+  watch: {
+    user: "idValid",
   },
   methods: {
     idValid() {
@@ -117,6 +161,7 @@ export default {
         this.idValidFlag = true;
       } else {
         this.idValidFlag = false;
+        // this.$refs.idvalid_text.disabled = false;
       }
     },
     pwdValid() {
@@ -136,6 +181,15 @@ export default {
         this.pwdCheckFlag = false;
       }
     },
+    nickValid() {
+      if (/^[A-Za-z0-9].+$/.test(this.user.nickname)) {
+        // 영문/숫자
+        this.nickValidFlag = true;
+      } else {
+        this.nickValidFlag = false;
+        // this.$refs.idvalid_text.disabled = false;
+      }
+    },
     emailCheckValid() {
       if (/^[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(this.user.email)) {
         this.emailValidFlag = true;
@@ -144,25 +198,37 @@ export default {
       }
     },
     SignUp: function () {
-      // if (!this.idValid || !this.passwordValidFlag || !this.passwordCheckFlag) {
-      //   alert("유효성 확인");
-      //   return;
-      // }
-      axios
-        .post("/SignUp", {
-          //axios 사용
-          user_id: this.user.id,
-          user_pwd: this.user.password,
-          user_nickname: this.user.nickname,
-          user_email: this.user.email,
-        })
-        .then((response) => {
-          alert("SignUp Success");
-          this.$router.push("./"); // Login 페이지로 보내줌
-        })
-        .catch(function (error) {
-          alert("error");
-        });
+      console.log(this.idValidFlag);
+      if (!this.idValidFlag) {
+        alert("id 유효성을 확인 해주세요");
+      } else if (!this.pwdValidFlag) {
+        alert("password 유효성을 확인 해주세요");
+      } else if (!this.nickValidFlag) {
+        alert("nickname 유효성을 확인 해주세요");
+      } else if (!this.emailValidFlag) {
+        alert("email 유효성을 확인 해주세요");
+      } else if (!this.$refs.id_input.readOnly) {
+        alert("id 중복검사를 실행해주세요");
+      } else if (!this.$refs.nick_input.readOnly) {
+        alert("nickname 중복검사를 실행해주세요");
+      } else if (!this.$refs.email_input.readOnly) {
+        alert("email 중복검사를 실행해주세요");
+      } else {
+        axios
+          .post("/SignUp", {
+            //axios 사용
+            user_id: this.user.id,
+            user_pwd: this.user.password,
+            user_nickname: this.user.nickname,
+            user_email: this.user.email,
+          })
+          .then((response) => {
+            if (response.data == "회원가입성공") {
+              alert("SignUp Success");
+              this.$router.push("./"); // Login 페이지로 보내줌
+            }
+          });
+      }
     },
     idc: function () {
       console.log(this.user.id);
@@ -172,9 +238,6 @@ export default {
           console.log(a);
           if (a) {
             this.$refs.id_input.readOnly = true;
-            // $(".username_input").attr("check_result", "success");
-            // $("#id_check_sucess").show();
-            // $(".id_overlap_button").hide();
           }
         } else {
           alert("id중복입니다! 사용불가");
@@ -236,11 +299,6 @@ export default {
   height: 40px;
   margin-top: 20px;
 }
-/* .icon {
-  display: flex;
-  width: 40px;
-  height: 40px;
-} */
 .signup_btn {
   width: 100%;
   height: 40px;
@@ -255,5 +313,12 @@ export default {
   cursor: pointer;
   float: right;
   margin-top: 20px;
+}
+[aria-disabled="true"] {
+  opacity: 0.5;
+}
+.valid_text {
+  color: red;
+  font-size: small;
 }
 </style>

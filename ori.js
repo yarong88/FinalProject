@@ -1,6 +1,6 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
-const UserShema = require('./user.js')
+const userShema = require('./user.js')
 
 const USER = process.env.dbid;
 const PWD = process.env.dbpw;
@@ -16,4 +16,4 @@ mongoose
     .catch((err) => console.log(err));
 
 
-module.exports = UserShema
+module.exports = userShema

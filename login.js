@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express');
 const router = express.Router();
 const User = require('./ori.js')
-const userSchema = require('./user.js')
+// const userSchema = require('./user.js')
 const logger = require('morgan')
 const path = require('path')
 const history = require('connect-history-api-fallback')
@@ -15,10 +15,7 @@ const crypto = require('crypto'); //Node.js 에서 제공하는 암호화 모듈
 // router.get('/', function (req, res, next) {
 // });
 
-app.use(createProxyMiddleware('/v1', {
-    target: 'https://openai.naver.com',
-    changeOrigin: true
-}))
+app.use(history())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -57,6 +54,7 @@ app.post('/SignUp', (req, res) => {
         const new_user = new User(_data);
         const t = await new_user.save();
         console.log(t)
+        res.send('회원가입성공')
     }
     user_save()
     // });
@@ -68,7 +66,7 @@ app.get('/SignIn/SignUp/idc/:user_id', (req, res) => {
     const user_id = req.params.user_id
     console.log(user_id)
     const id_find = async () => {
-        const t = await userSchema.find({ user_id: { $eq: user_id } }, { _id: 0, __v: 0 })
+        const t = await User.find({ user_id: { $eq: user_id } }, { _id: 0, __v: 0 })
             .lean()
         if (t.length === 0) {
             console.log('id 사용가능')
@@ -85,7 +83,7 @@ app.get('/SignIn/SignUp/nickc/:user_nickname', (req, res) => {
     const user_nickname = req.params.user_nickname
     console.log(user_nickname)
     const nick_find = async () => {
-        const t = await userSchema.find({ user_nickname }, { _id: 0, __v: 0 })
+        const t = await User.find({ user_nickname }, { _id: 0, __v: 0 })
             .lean()
         if (t.length === 0) {
             console.log('닉네임 사용가능')
@@ -102,7 +100,7 @@ app.get('/SignIn/SignUp/emailc/:user_email', (req, res) => {
     const user_email = req.params.user_email
     console.log(user_email)
     const email_find = async () => {
-        const t = await userSchema.find({ user_email }, { _id: 0, __v: 0 })
+        const t = await User.find({ user_email }, { _id: 0, __v: 0 })
             .lean()
         if (t.length === 0) {
             console.log('이메일 사용가능')
@@ -115,23 +113,29 @@ app.get('/SignIn/SignUp/emailc/:user_email', (req, res) => {
     }
     email_find()
 })
-
-app.get('/SignIn/:user_id:user_pwd', (req, res) => {
-    const user_id = req.params.user_id
-    const user_pwd = req.params.user_pwd
-    // console.log(user_id)
-    // console.log(user_pwd)
-
-    const read = async () => {
-        const t = await userSchema.find({ user_id, user_pwd }, { _id: 0, __v: 0 })
-            .lean()
-            .then(t => {
-                // console.log(t)
-                res.send(t)
-            })
+app.post('/SignIn', (req, res) => {
+    const user_id = req.body.user_id
+    const user_pwd = req.body.user_pwd
+    const id_find = async () => {
+        const t = await User.find({ user_id }, { _id: 0, __v: 0 }).lean()
+        return t
     }
-    read()
+    id_find().then(v => {
+        console.log(v)
+        if (v[0] == undefined) {
+            res.send('wrong_id')
+        }
+        else {
+            if (user_pwd === v[0].user_pwd) {
+                res.send('login_success')
+            }
+            else {
+                res.send('wrong_pwd')
+            }
+        }
+    })
 })
+
 
 app.listen(3000, () => {
     console.log('3000 server start')
