@@ -33,7 +33,7 @@
                 border: 'solid 1px #000',
               }"
               :lock="disabled"
-              @mousemove="getCoordinate($event)"
+              @mousemove="[getCoordinate($event), toCertify()]"
               :additional-images="additionalImages"
               @click="offsetClick"
             />
@@ -351,6 +351,12 @@
 import axios from "axios";
 import VueDrawingCanvas from "vue-drawing-canvas";
 export default {
+  beforeRouteLeave(to, from, next) {
+    if (this.certification) next();
+    else if (confirm("변경사항이 저장되지 않을 수 있습니다.")) {
+      next();
+    }
+  },
   components: {
     VueDrawingCanvas,
   },
@@ -401,6 +407,7 @@ export default {
       idModify: "",
       loadedText: [],
       loadedImage: [],
+      certification: true,
     };
   },
   mounted() {
@@ -427,8 +434,24 @@ export default {
       .catch(function (error) {
         console.log(error);
       });
+    // 페이지 이동시 경고창
+    window.addEventListener("beforeunload", this.unLoadEvent);
+  },
+  beforeUnmount() {
+    window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    // 페이지 이동시 경고창
+    unLoadEvent: function (event) {
+      if (this.certification) return;
+
+      event.preventDefault();
+      event.returnValue = "";
+    },
+    // 페이지 이동시 경고
+    toCertify() {
+      this.certification = false;
+    },
     // 메모 창과 수정 창 OnOff
     mainOnOff: function (data) {
       if (this.sidebarStatus && !this.mainStatus) {
@@ -530,6 +553,9 @@ export default {
       // input 초기화
       this.cy += 30;
       // enter 입력 이후 줄바꿈 느낌으로
+
+      this.toCertify();
+      // 페이지 이동 경고
     },
     // 이미지 불러오기 (배경화면으로)
     async setImage(event) {

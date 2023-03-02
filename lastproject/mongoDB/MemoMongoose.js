@@ -1,5 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
+const MemoData = require("./MemoSchema.js");
+
 const USER = process.env.dbid;
 const PWD = process.env.dbpw;
 const HOST = process.env.dbhost;
@@ -13,5 +15,5 @@ mongoose
   .connect(mongodbURL, { useNewUrlParser: true })
   .then(() => console.log("connection succesful"))
   .catch((err) => console.error(err));
-const UserData = require("./dataSchema.js");
-module.exports = UserData;
+
+module.exports = MemoData;
