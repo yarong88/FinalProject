@@ -83,7 +83,8 @@
           중복검사
         </button>
         <div class="valid_text" v-if="!nickValidFlag">
-          유효하지 않은 닉네임입니다. <br />영문과 숫자만 사용할 수 있습니다.
+          유효하지 않은 닉네임입니다. <br />영문과 숫자만 사용할 수 있습니다.<br />
+          또한, 4자이상 8자 이하여야합니다.
         </div>
         <br />
       </div>
@@ -182,7 +183,7 @@ export default {
       }
     },
     nickValid() {
-      if (/^[A-Za-z0-9].+$/.test(this.user.nickname)) {
+      if (/^[A-Za-z0-9].{4,8}$/.test(this.user.nickname)) {
         // 영문/숫자
         this.nickValidFlag = true;
       } else {
