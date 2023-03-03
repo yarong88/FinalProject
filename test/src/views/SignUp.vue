@@ -1,131 +1,135 @@
 <template>
-  <div id="SignUp">
-    <h3>Sign Up</h3>
-    <span class="icon"><i class="fa fa-user fa-x" aria-hidden="true"></i></span>
-    <span>회원정보를 입력해주세요</span>
-    <div class="info_input">
-      <div class="input_group">
-        <span class="icon"
-          ><i class="fa fa-user fa-2x" aria-hidden="true"></i
-        ></span>
-        <input
-          ref="id_input"
-          class="signup_input"
-          v-model="user.id"
-          placeholder=" ID"
-          @keyup="idValid"
-        />
-        <button
-          :disabled="!idValidFlag"
-          id="idvalid_btn"
-          class="checkValid"
-          @click="idc"
-        >
-          중복검사
-        </button>
-        <div class="valid_text" v-if="!idValidFlag">
-          유효하지 않은 아이디 입니다. <br />
-          영문과 숫자만 사용할 수 있습니다.
+  <div class="SignUpContainer">
+    <div id="SignUp">
+      <h3>Sign Up</h3>
+      <span class="icon"
+        ><i class="fa fa-user fa-x" aria-hidden="true"></i
+      ></span>
+      <span>회원정보를 입력해주세요</span>
+      <div class="info_input">
+        <div class="input_group">
+          <span class="icon"
+            ><i class="fa fa-user fa-2x" aria-hidden="true"></i
+          ></span>
+          <input
+            ref="id_input"
+            class="signup_input"
+            v-model="user.id"
+            placeholder=" ID"
+            @keyup="idValid"
+          />
+          <button
+            :disabled="!idValidFlag"
+            id="idvalid_btn"
+            class="checkValid"
+            @click="idc"
+          >
+            중복검사
+          </button>
+          <div class="valid_text" v-if="!idValidFlag">
+            유효하지 않은 아이디 입니다. <br />
+            영문과 숫자만 사용할 수 있습니다.
+          </div>
+          <br />
+        </div>
+        <div class="input_group">
+          <span class="icon"
+            ><i class="fa fa-lock fa-2x" aria-hidden="true"></i
+          ></span>
+          <input
+            ref="pwd_input"
+            class="signup_input"
+            v-model="user.password"
+            type="password"
+            placeholder=" password"
+            @keyup="pwdValid"
+          />
+          <div class="valid_text" v-if="!pwdValidFlag">
+            유효하지 않은 비밀번호 입니다. <br />대문자 / 소문자 / 숫자가 1개
+            이상 존재해야합니다. <br />
+            또한, 8자이상 16자 이하여야합니다.
+          </div>
+          <br />
+        </div>
+        <div class="input_group">
+          <span class="icon">
+            <i class="fa fa-lock fa-2x" aria-hidden="true"></i
+          ></span>
+          <input
+            class="signup_input"
+            v-model="pwdCheck"
+            type="password"
+            placeholder=" password - confirm"
+            @keyup="pwdCheckValid"
+          />
+          <div class="valid_text" v-if="!pwdCheckFlag">
+            비밀번호가 동일하지 않습니다.
+          </div>
         </div>
         <br />
-      </div>
-      <div class="input_group">
-        <span class="icon"
-          ><i class="fa fa-lock fa-2x" aria-hidden="true"></i
-        ></span>
-        <input
-          ref="pwd_input"
-          class="signup_input"
-          v-model="user.password"
-          type="password"
-          placeholder=" password"
-          @keyup="pwdValid"
-        />
-        <div class="valid_text" v-if="!pwdValidFlag">
-          유효하지 않은 비밀번호 입니다. <br />대문자 / 소문자 / 숫자가 1개 이상
-          존재해야합니다. <br />
-          또한, 8자이상 16자 이하여야합니다.
-        </div>
-        <br />
-      </div>
-      <div class="input_group">
-        <span class="icon">
-          <i class="fa fa-lock fa-2x" aria-hidden="true"></i
-        ></span>
-        <input
-          class="signup_input"
-          v-model="pwdCheck"
-          type="password"
-          placeholder=" password - confirm"
-          @keyup="pwdCheckValid"
-        />
-        <div class="valid_text" v-if="!pwdCheckFlag">
-          비밀번호가 동일하지 않습니다.
-        </div>
-      </div>
-      <br />
-      <div class="input_group">
-        <span class="icon"
-          ><i class="fa fa-user fa-2x" aria-hidden="true"></i></span
-        ><input
-          ref="nick_input"
-          class="signup_input"
-          v-model="user.nickname"
-          placeholder=" nickname"
-          @keyup="nickValid"
-        />
-        <button
-          :disabled="!nickValidFlag"
-          id="nickvalid_btn"
-          class="checkValid"
-          @click="nickc"
-        >
-          중복검사
-        </button>
-        <div class="valid_text" v-if="!nickValidFlag">
-          유효하지 않은 닉네임입니다. <br />영문과 숫자만 사용할 수 있습니다.<br />
+        <div class="input_group">
+          <span class="icon"
+            ><i class="fa fa-user fa-2x" aria-hidden="true"></i></span
+          ><input
+            ref="nick_input"
+            class="signup_input"
+            v-model="user.nickname"
+            placeholder=" nickname"
+            @keyup="nickValid"
+          />
+          <button
+            :disabled="!nickValidFlag"
+            id="nickvalid_btn"
+            class="checkValid"
+            @click="nickc"
+          >
+            중복검사
+          </button>
+          <div class="valid_text" v-if="!nickValidFlag">
+            유효하지 않은 닉네임입니다. <br />영문과 숫자만 사용할 수 있습니다..<br />
           또한, 4자이상 8자 이하여야합니다.
+          </div>
+          <br />
         </div>
-        <br />
-      </div>
-      <div class="input_group">
-        <span class="icon"
-          ><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></span
-        ><input
-          ref="email_input"
-          class="signup_input"
-          type="email"
-          v-model="user.email"
-          placeholder=" email"
-          @keyup="emailCheckValid"
-        />
-        <button
-          :disabled="!emailValidFlag"
-          id="emailvalid_btn"
-          class="checkValid"
-          @click="emailc"
-        >
-          중복검사
-        </button>
-        <div class="valid_text" v-if="!emailValidFlag">
-          유효하지 않은 이메일 입니다.
+        <div class="input_group">
+          <span class="icon"
+            ><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></span
+          ><input
+            ref="email_input"
+            class="signup_input"
+            type="email"
+            v-model="user.email"
+            placeholder=" email"
+            @keyup="emailCheckValid"
+          />
+          <button
+            :disabled="!emailValidFlag"
+            id="emailvalid_btn"
+            class="checkValid"
+            @click="emailc"
+          >
+            중복검사
+          </button>
+          <div class="valid_text" v-if="!emailValidFlag">
+            유효하지 않은 이메일 입니다.
+          </div>
+          <br />
         </div>
-        <br />
       </div>
+      <button
+        :disabled="
+          !user.email ||
+          !user.password ||
+          !pwdCheck ||
+          !user.nickname ||
+          !user.email
+        "
+        class="signup_btn"
+        v-on:click="SignUp"
+      >
+        SignUp
+      </button>
     </div>
-    <button
-      :disabled="
-        !user.email ||
-        !user.password ||
-        !pwdCheck ||
-        !user.nickname ||
-        !user.email
-      "
-      class="signup_btn"
-      v-on:click="SignUp"
-    >
-      SignUp
-    </button>
   </div>
 </template>
 

@@ -62,32 +62,120 @@
 
   <hr />
   <div class="footer">Footer</div>
+  <div class="search_group">
+    <div class="search_wrap">
+      <span class="icon"
+        ><i
+          class="fa fa-search"
+          style="
+            font-size: 20px;
+            background-color: rgb(128, 128, 128);
+            color: #fff;
+            padding: 5px 20px;
+            border-radius: 10px;
+          "
+          ><input
+            type="text"
+            id="search"
+            placeholder="검색어를 입력해주세요"
+            @input="inputKeyWord($event)"
+            @keyup.enter="memoSearch" /></i
+      ></span>
+    </div>
+  </div>
+  <br />
+  <SearchResult
+    v-if="status"
+    v-bind:search-result="keyWord"
+    v-bind:data-box="dataBox"
+  />
+  <br />
+  <RecentMemo v-bind:recent-memo="recentDataBox" />
 </template>
 
 <script>
 /* eslint-disable */
-import DetailContent from "@/components/DetailContent.vue";
+// <<<<<<< HEAD:test/src/views/HeadSearch.vue
+// import DetailContent from "@/components/DetailContent.vue";
+// import SearchResult from "@/components/SearchResult.vue";
+// import SearchInput from "@/components/SearchInput.vue";
+// export default {
+//   props: ["value"],
+//   components: {
+//     DetailContent,
+//     SearchInput,
+//     SearchResult,
+//   },
+//   data() {
+//     return {
+//       status: false,
+//       inputtext: "",
+//     };
+//   },
+//   methods: {
+//     detailContent: function () {
+//       this.status = !this.status;
+//     },
+//     updateInput: function (event) {
+//       this.$emit("input", event.target.value);
+// =======
+import axios from "axios";
 import SearchResult from "@/components/SearchResult.vue";
-import SearchInput from "@/components/SearchInput.vue";
+import RecentMemo from "@/components/RecentMemo.vue";
 export default {
-  props: ["value"],
   components: {
-    DetailContent,
-    SearchInput,
     SearchResult,
+    RecentMemo,
   },
   data() {
     return {
+      recentDataBox: [],
       status: false,
-      inputtext: "",
+      keyWord: "",
+      dataBox: [],
+      inputtext: [],
     };
   },
+  mounted() {
+    axios
+      .post("/memoLoad", {
+        userId: "testId",
+      })
+      .then((response) => {
+        // 화살표 함수를 사용하면 this.를 사용할 수 있다.
+        this.recentDataBox = response.data;
+        this.recentDataBox = [...this.recentDataBox].reverse();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  },
   methods: {
-    detailContent: function () {
-      this.status = !this.status;
+    inputKeyWord(e) {
+      this.keyWord = e.target.value;
     },
-    updateInput: function (event) {
-      this.$emit("input", event.target.value);
+    memoSearch() {
+      if (!this.status) {
+        this.status = !this.status;
+      }
+      axios
+        .post("/memoSearch", {
+          keyWord: this.keyWord,
+        })
+        .then((response) => {
+          // 화살표 함수를 사용하면 this.를 사용할 수 있다.
+          this.dataBox = response.data;
+          // DB에서 받은 데이터를 최신순으로 10개까지 정렬
+          if (this.dataBox.length >= 10) {
+            this.dataBox = [...this.dataBox].slice(-10).reverse();
+          } else {
+            this.dataBox = [...this.dataBox].reverse();
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+// >>>>>>> main:lastproject/src/views/HeadSearch.vue
     },
   },
 };
@@ -221,5 +309,29 @@ export default {
 .footer {
   background: #777777;
   height: 80px;
+/* =======
+#search {
+  background-color: rgb(128, 128, 128);
+  width: 400px;
+  height: 40px;
+  border: 0;
+  margin-left: 15px;
+  font-size: 15px;
+  color: #fff;
 }
+#search::placeholder {
+  color: #fff;
+}
+.search_wrap {
+  margin: 20px;
+}
+.icon {
+  width: 20px;
+  height: 20px;
+}
+.search_img {
+  height: 30px;
+  widows: 30px;
+>>>>>>> main:lastproject/src/views/HeadSearch.vue
+} */}
 </style>
