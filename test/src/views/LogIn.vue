@@ -28,7 +28,13 @@
       <!-- <a v-bind:href="url.signUpUrl"> Sign Up </a> -->
       <hr style="color: rgb(128, 128, 128)" />
       <br />
-      <div class="googlelogin" role="button" aria-disabled="false" tabindex="0">
+      <div
+        v-on:click="GoogleLoginBtn"
+        class="googlelogin"
+        role="button"
+        aria-disabled="false"
+        tabindex="0"
+      >
         <svg viewBox="0 0 20 20" class="googleLogo">
           <g>
             <path
@@ -51,6 +57,7 @@
         </svg>
         Google로 계속하기
       </div>
+      <div id="my-signin2" style="display: none"></div>
     </div>
   </div>
 </template>
@@ -72,14 +79,6 @@ export default {
   },
   methods: {
     login: function () {
-      // console.log(this.user.id);
-      // console.log(this.user.password);
-      // axios.get("/SignIn/" + this.user.id + this.user.password).then((res) => {
-      //   if ((res.data = "성공")) {
-      //     alert("로그인 성공");
-      //   } else {
-      //     alert("로그인 실패");
-      //   }
       console.log(this.user.id);
       console.log(this.user.password);
       axios
@@ -98,24 +97,52 @@ export default {
           }
         });
     },
-    // axios
-    //   .post("/SignIn/", {
-    //     user_id: this.user.id,
-    //     user_pwd: this.user.password,
-    //   })
-    //   .then(
-    //     (response) => {
-    //       //로그인 성공
-    //       alert("success login");
-    //     },
-    //     (error) => {
-    //       // error 를 보여줌
-    //       alert(error.response.data.error);
-    //     }
-    //   )
-    //   .catch((error) => {
-    //     alert(error);
-    //   });
+    GoogleLoginBtn: function () {
+      var self = this;
+
+      window.gapi.signin2.render("my-signin2", {
+        scope: "profile email",
+        width: 240,
+        height: 50,
+        longtitle: true,
+        theme: "dark",
+        onsuccess: this.GoogleLoginSuccess,
+        onfailure: this.GoogleLoginFailure,
+      });
+
+      setTimeout(function () {
+        if (!self.googleLoginCheck) {
+          const auth = window.gapi.auth2.getAuthInstance();
+          auth.isSignedIn.get();
+          document.querySelector(".abcRioButton").click();
+        }
+      }, 500);
+    },
+    //구글 로그인 이후 실행되는 콜백함수(성공)
+    async onSuccess(googleUser) {
+      const user_join_type = "g";
+      const googleEmail = googleUser.getBasicProfile().pu;
+      console.log(googleEmail);
+
+      const res = await fetch("https://123.121.123.1/api/sns_signup_check", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: `${googleEmail}`,
+          user_join_type: user_join_type,
+        }),
+      });
+
+      const data = await res.json();
+      this.checkSnSLogin(data, googleEmail, user_join_type);
+    },
+    //구글 로그인 콜백함수 (실패)
+    onFailure(error) {
+      // eslint-disable-next-line
+      console.log(error);
+    },
   },
 };
 </script>

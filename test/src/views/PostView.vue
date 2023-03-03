@@ -11,7 +11,7 @@
 <script>
 /* eslint-disable */
 import axios from "axios";
-import postItem from "../components/PostItem.vue";
+import postItem from "../components/postItem.vue";
 
 export default {
   name: "postList",

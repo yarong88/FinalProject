@@ -28,7 +28,7 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/SignIn"
+          <router-link to="/LogIn"
             ><img
               v-if="st"
               class="header_icon"
@@ -37,14 +37,17 @@
           /></router-link>
         </li>
         <li>
-          <router-link to="/Shorts"
+          <router-link to="/MemoList"
             ><img v-if="st" class="header_icon" src="./assets/video.png" alt=""
           /></router-link>
         </li>
       </ul>
     </div>
   </nav>
+  <hr />
   <router-view />
+  <hr />
+  <div class="footer">Footer</div>
 </template>
 
 <script>
@@ -68,14 +71,12 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
+  text-align: center;
   color: #2c3e50;
 }
-
 nav {
   /* padding: 30px; */
 }
-
 nav a {
   font-weight: bold;
   color: #2c3e50;
@@ -117,5 +118,9 @@ nav a.router-link-exact-active {
 }
 li {
   float: left;
+}
+.footer {
+  background: #777777;
+  height: 80px;
 }
 </style>
