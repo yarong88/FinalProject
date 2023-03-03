@@ -1,12 +1,18 @@
 <template>
-  <div class="wrap_memo">
-    <div class="memo_title">
+  <div class="wrap-memo">
+    <div class="memo-title">
       <!-- 사이드 바 출력 버튼 -->
-      <button class="sidebarOnOff" @click="sidebarOnOff">사이드 바</button>
+      <button
+        class="sidebar-onoff"
+        v-if="sidebarButtonStatus"
+        @click="sidebarOnOff"
+      >
+        사이드 바
+      </button>
     </div>
-    <div class="memo_container">
+    <div class="memo-container">
       <!-- 메모장 시작 -->
-      <div class="CanvasContent" v-if="!mainStatus">
+      <div class="canvas-content" v-if="!mainStatus">
         <div class="source">
           <!-- 캔버스 시작 -->
           <div class="canvas-container">
@@ -220,7 +226,7 @@
               </div>
             </div>
             <!-- 별점 및 이미지 저장 -->
-            <div class="star_tool">
+            <div class="star-tool">
               <form name="myform" id="myform" method="post" action="./save">
                 <fieldset>
                   <input
@@ -256,8 +262,8 @@
                 </fieldset>
               </form>
               <!-- 이미지 저장 -->
-              <button class="save_tool" @click="imgSave">
-                <img class="save_img" src="../assets/save.png" alt="" />save
+              <button class="save-tool" @click="imgSave">
+                <img class="save-img" src="../assets/save.png" alt="" />save
               </button>
             </div>
             <!-- 별점 끝 -->
@@ -292,7 +298,7 @@
       </div>
       <!-- 메모장 끝 -->
       <!-- 메모장 확인 창 시작 -->
-      <div class="DetailContent" v-if="mainStatus">
+      <div class="detail-content" v-if="mainStatus">
         <div class="source">
           <div class="canvas-container">
             <p>Canvas:</p>
@@ -351,6 +357,7 @@
 import axios from "axios";
 import VueDrawingCanvas from "vue-drawing-canvas";
 export default {
+  // 라우터 이동시 경고창
   beforeRouteLeave(to, from, next) {
     if (this.certification) next();
     else if (confirm("변경사항이 저장되지 않을 수 있습니다.")) {
@@ -364,6 +371,7 @@ export default {
     return {
       mainStatus: false,
       sidebarStatus: false,
+      sidebarButtonStatus: false,
       initialImage: [
         {
           type: "dash",
@@ -408,32 +416,51 @@ export default {
       loadedText: [],
       loadedImage: [],
       certification: true,
+      loginId: "",
     };
   },
   mounted() {
-    if ("vue-drawing-canvas" in window.localStorage) {
-      this.initialImage = JSON.parse(
-        window.localStorage.getItem("vue-drawing-canvas")
-      );
+    // 로그인 상태
+    if ("login-id" in window.localStorage) {
+      this.loginId = window.localStorage.getItem("login-id");
+      // DB에서 데이터 받아오기
+      axios
+        .post("/memoLoad", {
+          userId: this.loginId,
+        })
+        .then((response) => {
+          // 화살표 함수를 사용하면 this.를 사용할 수 있다.
+          this.dataBox = response.data;
+          // DB에서 받은 데이터를 최신순으로 10개까지 정렬
+          if (this.dataBox.length >= 10) {
+            this.sideDateBox = [...this.dataBox].slice(-10).reverse();
+          } else {
+            this.sideDateBox = [...this.dataBox].reverse();
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.sidebarButtonStatus = true;
     }
-    // DB에서 데이터 받아오기
-    axios
-      .post("/memoLoad", {
-        userId: "testId",
-      })
-      .then((response) => {
-        // 화살표 함수를 사용하면 this.를 사용할 수 있다.
-        this.dataBox = response.data;
-        // DB에서 받은 데이터를 최신순으로 10개까지 정렬
-        if (this.dataBox.length >= 10) {
-          this.sideDateBox = [...this.dataBox].slice(-10).reverse();
-        } else {
-          this.sideDateBox = [...this.dataBox].reverse();
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    // 임시 저장한 데이터 불러오기
+    if (
+      "temporary-text-storage" in window.localStorage ||
+      "temporary-image-storage" in window.localStorage
+    ) {
+      const temporaryTextBox = window.localStorage.getItem(
+        "temporary-text-storage"
+      );
+      if (typeof temporaryTextBox === "string") {
+        this.textBox.push(temporaryTextBox);
+      } else {
+        this.textBox = temporaryTextBox;
+      }
+      this.backgroundImage = window.localStorage.getItem(
+        "temporary-image-storage"
+      );
+      this.$refs.VueCanvasDrawing.redraw();
+    }
     // 페이지 이동시 경고창
     window.addEventListener("beforeunload", this.unLoadEvent);
   },
@@ -559,6 +586,7 @@ export default {
     },
     // 이미지 불러오기 (배경화면으로)
     async setImage(event) {
+      this.textBox = [];
       let URL = window.URL;
       this.backgroundImage = URL.createObjectURL(event.target.files[0]);
       await this.$refs.VueCanvasDrawing.redraw();
@@ -579,53 +607,62 @@ export default {
     },
     // 저장
     imgSave() {
-      if (window.confirm("저장하시겠습니까?")) {
-        this.mergeText(); // 텍스트 합치기
-        if (this.idModify) {
-          // update할 데이터 폼
-          const data = {
-            _id: this.idModify, // 업데이트 하기 위한 키
-            userId: "testId", // 아이디
-            userPassword: "testPassword", // 비번
-            contentText: this.textBox, // 텍스트
-            contentLongText: this.finalText, // 합친 텍스트
-            contentImage: this.image, // 이미지
-            writingTime: new Date(), // 작성시각
-            ratingScore: 3, // 별점
-            recommendPoint: 10, // 추천수
-          };
-          // axios post로 저장할 데이터 서버로 전송
-          axios
-            .post("/memoUpdate", data)
-            .then((response) => {
-              console.log(response.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        } else {
-          // 저장할 데이터 폼
-          const data = {
-            userId: "testId", // 아이디
-            userPassword: "testPassword", // 비번
-            contentText: this.textBox, // 텍스트
-            contentLongText: this.finalText, // 합친 텍스트
-            contentImage: this.image, // 이미지
-            writingTime: new Date(), // 작성시각
-            ratingScore: 3, // 별점
-            recommendPoint: 10, // 추천수
-          };
-          // axios post로 서버 속 데이터 업데이트
-          axios
-            .post("/memoSave", data)
-            .then((response) => {
-              console.log(response.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+      if (this.loginId) {
+        // 로그인 되어 있으면 저장 진행
+        if (window.confirm("저장하시겠습니까?")) {
+          this.mergeText(); // 텍스트 합치기
+          if (this.idModify) {
+            // update할 데이터 폼
+            const data = {
+              _id: this.idModify, // 업데이트 하기 위한 키
+              userId: this.loginId, // 아이디
+              contentText: this.textBox, // 텍스트
+              contentLongText: this.finalText, // 합친 텍스트
+              contentImage: this.image, // 이미지
+              writingTime: new Date(), // 작성시각
+              ratingScore: 3, // 별점
+              recommendPoint: 10, // 추천수
+            };
+            // axios post로 저장할 데이터 서버로 전송
+            axios
+              .post("/memoUpdate", data)
+              .then((response) => {
+                console.log(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } else {
+            // 저장할 데이터 폼
+            const data = {
+              userId: this.loginId, // 아이디
+              contentText: this.textBox, // 텍스트
+              contentLongText: this.finalText, // 합친 텍스트
+              contentImage: this.image, // 이미지
+              writingTime: new Date(), // 작성시각
+              ratingScore: 0, // 별점
+              recommendPoint: 0, // 추천수
+            };
+            // axios post로 서버 속 데이터 업데이트
+            axios
+              .post("/memoSave", data)
+              .then((response) => {
+                console.log(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+          window.localStorage.removeItem("temporary-text-storage");
+          window.localStorage.removeItem("temporary-image-storage");
+          window.location.reload(); // 리셋할 방법이 뭐 있을까?
         }
-        window.location.reload(); // 리셋할 방법이 뭐 있을까?
+      } else {
+        if (window.confirm("로그아웃 상태입니다. 로그인하시겠습니까?")) {
+          window.localStorage.setItem("temporary-text-storage", this.textBox);
+          window.localStorage.setItem("temporary-image-storage", this.image);
+          this.$router.push("/LogIn");
+        }
       }
     },
     // 삭제
@@ -661,7 +698,7 @@ body {
   font-family: "Roboto", sans-serif;
   background-color: #f8f8f8;
 }
-.memo_title {
+.memo-title {
   /* background-color: rgb(190, 236, 236);
   height: 50px;
   border-radius: 15px;
@@ -669,10 +706,10 @@ body {
   box-shadow: 4px 4px 4px rgb(192, 192, 192); */
   position: relative;
 }
-.sidebarOnOff {
+.sidebar-onoff {
   position: absolute;
-  left: 70%;
-  bottom: 50px;
+  left: 80%;
+  bottom: 0px;
 }
 .button-container {
   margin: 15px;
@@ -690,11 +727,11 @@ body {
   text-align: center;
   font-size: 20px;
 }
-.wrap_memo {
+.wrap-memo {
   padding: 20px;
   margin: 10px;
 }
-.memo_container {
+.memo-container {
   display: flex;
   justify-content: center;
   /* //--> 레이아웃 지정 */
@@ -704,7 +741,7 @@ body {
   -ms-overflow-style: none;
   position: relative;
 }
-.write_wrap {
+.write-wrap {
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
@@ -713,7 +750,7 @@ body {
   padding: 5px;
   border-radius: 15px;
 }
-.CanvasContent {
+.canvas-content {
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
@@ -733,7 +770,7 @@ body {
 .canvas-container {
   margin: 15px;
 }
-.DetailContent {
+.detail-content {
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
@@ -777,7 +814,7 @@ body {
   border: #7e7e7e 1px solid;
   border-radius: 10px;
 }
-.write_area {
+.write-area {
   width: 99%;
   height: 550px;
   background-color: beige;
@@ -798,7 +835,7 @@ body {
   top: 0px;
   padding: 5px;
 }
-.memo_container::-webkit-scrollbar {
+.memo-container::-webkit-scrollbar {
   display: none;
 }
 .a {
@@ -814,7 +851,7 @@ body {
   position: sticky;
   position: -webkit-sticky;
 }
-.memo_tool {
+.memo-tool {
   /* background-color: rgb(160, 160, 255); */
   height: 50px;
   width: 100%;
@@ -823,11 +860,11 @@ body {
 /* .memo_tool > div {
       border: 1px solid #000;
     } */
-.write_tool {
+.write-tool {
   position: absolute;
   right: 5em;
 }
-.star_tool {
+.star-tool {
   display: flex;
   padding: 8px;
   height: 30px;
@@ -864,7 +901,7 @@ body {
 #myform input[type="radio"]:checked ~ label {
   text-shadow: 0 0 0 black; /* 마우스 클릭 체크 */
 }
-.save_tool {
+.save-tool {
   width: 100px;
   /* padding: 10px; */
   height: 30px;
@@ -872,7 +909,7 @@ body {
   right: 0; */
   cursor: pointer;
 }
-.save_img {
+.save-img {
   width: 20px;
   height: 20px;
   background-color: #cccccc;

@@ -51,6 +51,7 @@ app.post("/SignUp", (req, res) => {
     const new_user = new UserData(_data);
     const t = await new_user.save();
     console.log(t);
+    res.send("회원가입성공");
   };
   user_save();
   // });
@@ -110,21 +111,25 @@ app.get("/SignIn/SignUp/emailc/:user_email", (req, res) => {
   email_find();
 });
 
-app.get("/SignIn/:user_id:user_pwd", (req, res) => {
-  const user_id = req.params.user_id;
-  const user_pwd = req.params.user_pwd;
-  // console.log(user_id)
-  // console.log(user_pwd)
-
-  const read = async () => {
-    const t = await UserData.find({ user_id, user_pwd }, { _id: 0, __v: 0 })
-      .lean()
-      .then((t) => {
-        // console.log(t)
-        res.send(t);
-      });
+app.post("/SignIn", (req, res) => {
+  const user_id = req.body.user_id;
+  const user_pwd = req.body.user_pwd;
+  const id_find = async () => {
+    const t = await UserData.find({ user_id }, { _id: 0, __v: 0 }).lean();
+    return t;
   };
-  read();
+  id_find().then((v) => {
+    console.log(v);
+    if (v[0] == undefined) {
+      res.send("wrong_id");
+    } else {
+      if (user_pwd === v[0].user_pwd) {
+        res.send("login_success");
+      } else {
+        res.send("wrong_pwd");
+      }
+    }
+  });
 });
 
 // db에 메모 저장

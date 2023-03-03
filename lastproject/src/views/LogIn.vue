@@ -1,18 +1,18 @@
 <template>
-  <div class="LogInContainer">
-    <div id="SignIn">
+  <div class="log-in-container">
+    <div id="sign_in">
       <h3>Sign In</h3>
       <span class="icon"
         ><i class="fa fa-user fa-x" aria-hidden="true"></i
       ></span>
       <span> 회원정보를 입력해주세요</span>
-      <div class="info_input">
-        <div class="input_group">
-          <input class="signin_input" v-model="user.id" placeholder="ID" />
+      <div class="info-input">
+        <div class="input-group">
+          <input class="signin-input" v-model="user.id" placeholder="ID" />
           <br />
         </div>
         <input
-          class="signin_input"
+          class="signin-input"
           v-model="user.password"
           type="password"
           password-reveal
@@ -20,16 +20,21 @@
         /><br />
       </div>
       <br />
-      <input class="checkbox" type="checkbox" value="Id_save" />아이디저장
-      <input class="checkbox" type="checkbox" value="auto_login" />자동로그인
-      <router-link to="/LogIn/SignUp" class="signup_link">회원가입</router-link>
+      <input class="check-box" type="checkbox" value="Id_save" />아이디저장
+      <input class="check-box" type="checkbox" value="auto_login" />자동로그인
+      <router-link to="/LogIn/SignUp" class="signup-link">회원가입</router-link>
       <br />
-      <button v-on:click="login" class="signin_btn">login</button><br />
+      <button v-on:click="login" class="signin-btn">login</button><br />
       <!-- <a v-bind:href="url.signUpUrl"> Sign Up </a> -->
       <hr style="color: rgb(128, 128, 128)" />
       <br />
-      <div class="googlelogin" role="button" aria-disabled="false" tabindex="0">
-        <svg viewBox="0 0 20 20" class="googleLogo">
+      <div
+        class="google-log-in"
+        role="button"
+        aria-disabled="false"
+        tabindex="0"
+      >
+        <svg viewBox="0 0 20 20" class="google-logo">
           <g>
             <path
               d="M19.9996 10.2297C19.9996 9.54995 19.9434 8.8665 19.8234 8.19775H10.2002V12.0486H15.711C15.4823 13.2905 14.7475 14.3892 13.6716 15.0873V17.586H16.9593C18.89 15.8443 19.9996 13.2722 19.9996 10.2297Z"
@@ -94,7 +99,9 @@ export default {
             alert("비번 틀림");
           } else if (response.data == "login_success") {
             alert("로그인 성공");
+            window.localStorage.setItem("login-id", this.user.id);
             this.$router.push("/"); // 메인 페이지로 보내줌
+            window.location.reload(); // 리셋할 방법이 뭐 있을까?
           }
         });
     },
@@ -121,15 +128,14 @@ export default {
 </script>
 
 <style>
-.LogInContainer {
-  width: 400px;
+.log-in-container {
   height: 600px;
 }
 h3 {
   text-align: center;
   margin: 50px;
 }
-.googlelogin {
+.google-log-in {
   user-select: none;
   transition: 20ms ease-in 0s;
   cursor: pointer;
@@ -151,10 +157,10 @@ h3 {
   box-shadow: rgba(15, 15, 15, 0.05) 0px 1px 2px;
   margin-bottom: 4px;
 }
-.googlelogin:hover {
+.google-log-in:hover {
   background-color: rgb(204, 204, 204);
 }
-.googleLogo {
+.google-logo {
   width: 14px;
   height: 14px;
   display: block;
@@ -163,20 +169,20 @@ h3 {
   backface-visibility: hidden;
   margin-right: 6px;
 }
-#SignIn {
+#sign_in {
   width: 350px;
   height: auto;
   position: absolute;
   top: 10%;
   left: 40%;
 }
-.input_group {
+.input-group {
   display: block;
 }
-.info_input {
+.info-input {
   margin-top: 10px;
 }
-.signin_input {
+.signin-input {
   display: inline-block;
   border-left-width: 0;
   border-right-width: 0;
@@ -190,10 +196,10 @@ h3 {
   height: 15px;
   font-size: small;
 }
-.signup_link {
+.signup-link {
   float: right;
 }
-.signin_btn {
+.signin-btn {
   width: 100%;
   height: 40px;
   margin-top: 30px;

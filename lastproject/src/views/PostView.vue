@@ -2,7 +2,7 @@
   <div>
     <postItem
       v-for="(post, i) in postList"
-      v-bind:postData="post"
+      v-bind:post-data="post"
       v-bind:key="i"
     />
   </div>

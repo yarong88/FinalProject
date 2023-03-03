@@ -1,16 +1,16 @@
 <template>
-  <div class="postContainer">
-    <div class="postItem">
-      <div class="postTop">
+  <div class="post-container">
+    <div class="post-item">
+      <div class="post-top">
         <span>작성자 닉네임 {{ postData.writingTime }}</span>
         <i class="bi bi-plus-square"></i>
       </div>
       <hr />
-      <img class="postImage" :src="postData.contentImage" alt="" />
+      <img class="post-image" :src="postData.contentImage" alt="" />
       <hr />
-      <div class="postMain">
-        <div class="postButtonContainer">
-          <div class="postButtonLeft">
+      <div class="post-main">
+        <div class="post-button-container">
+          <div class="post-button-left">
             <i
               class="bi bi-emoji-kiss"
               @click="[likeButton($event), testMethod()]"
@@ -18,27 +18,28 @@
             <i class="bi bi-chat" @click="modalOnOff"></i>
             <i class="bi bi-person-plus" @click="addToFriend($event)"></i>
           </div>
-          <div class="postButtonRight">
+          <div class="post-button-right">
             <i class="bi bi-bookmarks" @click="addBookmark($event)"></i>
           </div>
         </div>
         <hr />
-        <div class="postContent">
-          <span class="postTitle">타이틀 : {{ postData.contentText[0] }}</span>
+        <div class="post-content">
+          <span class="post-title">타이틀 : {{ postData.contentText[0] }}</span>
           <span> : </span>
-          <div class="postText">{{ postData.contentText }}</div>
+          <div class="post-text">{{ postData.contentText }}</div>
         </div>
       </div>
       <hr />
-      <div class="postFooter">
+      <div class="post-footer">
         <i class="bi bi-chat-dots"></i>
         <input type="text" />
       </div>
     </div>
   </div>
-  <div class="modalContainer" v-if="modalStatus">
-    <div class="modal">
-      <div class="modal-body">
+  <div class="post-item-modal-container" v-if="modalStatus">
+    <div class="post-item-modal-background" @click="modalOnOff"></div>
+    <div class="post-item-modal">
+      <div class="post-item-modal-body">
         <div class="source">
           <div class="canvas-container">
             <p>Canvas:</p>
@@ -110,10 +111,10 @@ export default {
     modalOnOff() {
       this.modalStatus = !this.modalStatus;
       const body = document.getElementsByTagName("body")[0];
-      if (body.classList.contains("scrollLock")) {
-        body.classList.remove("scrollLock");
+      if (body.classList.contains("scroll-lock")) {
+        body.classList.remove("scroll-lock");
       } else {
-        body.classList.add("scrollLock");
+        body.classList.add("scroll-lock");
       }
     },
   },
@@ -121,20 +122,20 @@ export default {
 </script>
 
 <style>
-.scrollLock {
+.scroll-lock {
   overflow: hidden;
 }
-.postContainer {
+.post-container {
   display: flex;
   justify-content: center;
 }
-.postItem {
+.post-item {
   width: 510px;
   height: 600px;
   background-color: rgb(255, 255, 255);
   margin: 10px;
 }
-.postTop {
+.post-top {
   display: flex;
   margin: 5px;
   justify-content: space-between;
@@ -144,11 +145,11 @@ export default {
   font-size: 1.8rem;
   margin-top: 5px;
 }
-.postImage {
+.post-image {
   width: 510px;
   height: 340px;
 }
-.postButtonContainer {
+.post-button-container {
   display: flex;
   justify-content: space-between;
 }
@@ -176,20 +177,20 @@ export default {
   font-size: 1.8rem;
   margin: 3px;
 }
-.postContent {
+.post-content {
   display: flex;
 }
-.postFooter {
+.post-footer {
   display: flex;
 }
 .bi-chat-dots {
   font-size: 1.8rem;
   margin: 3px;
 }
-.modalContainer {
+.post-item-modal-container {
   position: absolute;
 }
-.modal {
+.post-item-modal-background {
   position: fixed;
   top: 0;
   left: 0;
@@ -197,7 +198,7 @@ export default {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
 }
-.modal-body {
+.post-item-modal-body {
   position: fixed;
   top: 0;
   bottom: 0;

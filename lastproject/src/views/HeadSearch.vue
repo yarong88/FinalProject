@@ -1,6 +1,6 @@
 <template>
-  <div class="search_group">
-    <div class="search_wrap">
+  <div class="search-group">
+    <div class="search-wrap">
       <span class="icon"
         ><i
           class="fa fa-search"
@@ -27,7 +27,7 @@
     v-bind:data-box="dataBox"
   />
   <br />
-  <RecentMemo v-bind:recent-memo="recentDataBox" />
+  <RecentMemo v-if="recentMemoStatus" v-bind:recent-memo="recentDataBox" />
 </template>
 
 <script>
@@ -44,30 +44,36 @@ export default {
     return {
       recentDataBox: [],
       status: false,
+      recentMemoStatus: true,
       keyWord: "",
       dataBox: [],
       inputtext: [],
     };
   },
   mounted() {
-    axios
-      .post("/memoLoad", {
-        userId: "testId",
-      })
-      .then((response) => {
-        // 화살표 함수를 사용하면 this.를 사용할 수 있다.
-        this.recentDataBox = response.data;
-        this.recentDataBox = [...this.recentDataBox].reverse();
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    if ("login-id" in window.localStorage) {
+      const loginId = window.localStorage.getItem("login-id");
+      // DB에서 데이터 받아오기
+      axios
+        .post("/memoLoad", {
+          userId: loginId,
+        })
+        .then((response) => {
+          // 화살표 함수를 사용하면 this.를 사용할 수 있다.
+          this.recentDataBox = response.data;
+          this.recentDataBox = [...this.recentDataBox].reverse();
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
   },
   methods: {
     inputKeyWord(e) {
       this.keyWord = e.target.value;
     },
     memoSearch() {
+      this.recentMemoStatus = false;
       if (!this.status) {
         this.status = !this.status;
       }
@@ -106,14 +112,14 @@ export default {
 #search::placeholder {
   color: #fff;
 }
-.search_wrap {
+.search-wrap {
   margin: 20px;
 }
 .icon {
   width: 20px;
   height: 20px;
 }
-.search_img {
+.search-img {
   height: 30px;
   widows: 30px;
 }
