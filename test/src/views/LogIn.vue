@@ -93,6 +93,7 @@ export default {
             alert("비번 틀림");
           } else if (response.data == "login_success") {
             alert("로그인 성공");
+            window.localStorage.setItem("login-id", this.user.id);
             this.$router.push("/"); // 메인 페이지로 보내줌
           }
         });

@@ -41,7 +41,7 @@ app.post('/SignUp', (req, res) => {
       user_id: req.body.user_id,
       user_pwd: req.body.user_pwd, // hash
       user_nickname: req.body.user_nickname,
-      user_email: req.body.user_email,
+      user_email: req.body.user_email
 
       // birth: '',
       // gender: '',
@@ -140,12 +140,10 @@ app.post('/SignIn', (req, res) => {
       console.log(v)
       console.log(v[0])
       res.send('wrong_id')
-    }
-    else {
+    } else {
       if (user_pwd === v[0].user_pwd) {
         res.send('login_success')
-      }
-      else {
+      } else {
         res.send('wrong_pwd')
       }
     }
