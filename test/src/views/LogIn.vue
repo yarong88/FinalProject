@@ -109,6 +109,11 @@ export default {
         onsuccess: this.GoogleLoginSuccess,
         onfailure: this.GoogleLoginFailure,
       });
+      window.gapi.client.init({
+        clientId: "Your Client ID",
+        scope: "email",
+        plugin_name: "App Name that you used in google developer console API",
+      });
 
       setTimeout(function () {
         if (!self.googleLoginCheck) {
@@ -124,7 +129,17 @@ export default {
       const googleEmail = googleUser.getBasicProfile().pu;
       console.log(googleEmail);
 
-      const res = await fetch("https://123.121.123.1/api/sns_signup_check", {
+      // const res = await fetch("http://ds1234.iptime.org:7908/LogIn", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     email: `${googleEmail}`,
+      //     user_join_type: user_join_type,
+      //   }),
+      // });
+      const res = await fetch("http://localhost:3000/LogIn", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
