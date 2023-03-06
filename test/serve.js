@@ -43,9 +43,9 @@ app.post('/SignUp', (req, res) => {
       user_nickname: req.body.user_nickname,
       user_email: req.body.user_email,
 
-      birth: '',
-      gender: '',
-      hobby: ''
+      // birth: '',
+      // gender: '',
+      // hobby: ''
     }
     const new_user = new UserData(_data)
     const t = await new_user.save()

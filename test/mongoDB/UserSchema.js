@@ -7,10 +7,12 @@ const userSchema = new Schema({
   user_nickname: String,
   user_email: String,
 
-  birth: String,
-  gender: String,
-  hobby: String,
-  // id: Number,
+  //마이페이지 추가 정보 입력
+  profile_img: String,
+  birth: String,    //20000423  2000.04.23  000423
+  gender: String,   //라디오버튼
+  hobby: String,    //셀렉트
+
   create_date: { type: Date, default: Date.now },
 });
 
