@@ -92,18 +92,19 @@ export default {
     };
   },
   methods: {
+    // 좋아요 버튼
     likeButton(event) {
       const data = {
-        _id: this.postData._id,
-        userId: this.loginId,
+        _id: this.postData._id, // 게시물 id
+        userId: this.loginId, // 좋아요 버튼 누르는 사람의 id
       };
       if (event.target.style.color == "red") {
-        event.target.style.color = "black";
+        event.target.style.color = "black"; // 빨 -> 검
         axios.post("/delToLikeList", data).then((res) => {
           console.log(res.data);
         });
       } else {
-        event.target.style.color = "red";
+        event.target.style.color = "red"; // 검 -> 빨
         axios.post("/addToLikeList", data).then((res) => {
           console.log(res.data);
         });

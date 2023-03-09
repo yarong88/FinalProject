@@ -232,11 +232,13 @@ app.post("/memoSearch", (req, res) => {
 // 좋아요 아이디 리스트에 아이디 넣기
 app.post("/addToLikeList", (req, res) => {
   (async () => {
+    // id 찾고
     const findList = await MemoData.find({
       _id: req.body._id,
     }).lean();
     return findList;
   })().then((v) => {
+    // 배열에 id push한 뒤 업데이트
     v[0].likeIdList.push(req.body.userId);
     (async () => {
       await MemoData.updateOne(
@@ -263,6 +265,7 @@ app.post("/delToLikeList", (req, res) => {
     }).lean();
     return findList;
   })().then((v) => {
+    // 배열에 id 찾아 splice
     for (let i = 0; i < v[0].likeIdList.length; i++) {
       if (v[0].likeIdList[i] === req.body.userId) {
         v[0].likeIdList.splice(i, 1);
