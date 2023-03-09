@@ -77,6 +77,17 @@ export default {
       myPageModalStatus: false,
     };
   },
+  watch: {
+    $route(to, from) {
+      if (to.path !== from.path) {
+        // console.log(to.path, from.path)
+        if (to.path === "/") {
+          this.$router.go();
+        }
+        window.scroll(0, 0);
+      }
+    },
+  },
   mounted() {
     if ("login-id" in window.localStorage) {
       this.logInStatus = false;
@@ -126,7 +137,7 @@ nav a.router-link-exact-active {
   text-align: center;
   height: 80px;
   width: 100%;
-  background: rgb(240, 221, 196);
+  background: #caecff;
 }
 .inner-header {
   width: 1000px;
@@ -196,5 +207,34 @@ li {
 .footer {
   background: #777777;
   height: 80px;
+}
+@media screen and (max-width: 500px) {
+  .header {
+    height: 50px;
+  }
+  .header-text {
+    display: none;
+  }
+  .header-img {
+    width: 30px;
+    height: 30px;
+    margin: 10px 20px;
+    vertical-align: top;
+  }
+  .header-icon {
+    width: 20px;
+    height: 20px;
+    margin: 15px 20px 0px 0px;
+  }
+  .header-icon-test {
+    width: 20px;
+    height: 20px;
+    margin: 15px 20px 0px 0px;
+  }
+  .my-page-modal-body {
+    bottom: 300px;
+    left: 140px;
+    width: 250px;
+  }
 }
 </style>

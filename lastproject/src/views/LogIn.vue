@@ -7,17 +7,16 @@
       ></span>
       <span> 회원정보를 입력해주세요</span>
       <div class="info-input">
-        <div class="input-group">
+        <div class="signin-input-group">
           <input class="signin-input" v-model="user.id" placeholder="ID" />
-          <br />
+          <input
+            class="signin-input"
+            v-model="user.password"
+            type="password"
+            password-reveal
+            placeholder="password"
+          />
         </div>
-        <input
-          class="signin-input"
-          v-model="user.password"
-          type="password"
-          password-reveal
-          placeholder="password"
-        /><br />
       </div>
       <br />
       <input class="check-box" type="checkbox" value="Id_save" />아이디저장
@@ -101,7 +100,6 @@ export default {
             alert("로그인 성공");
             window.localStorage.setItem("login-id", this.user.id);
             this.$router.push("/"); // 메인 페이지로 보내줌
-            window.location.reload(); // 리셋할 방법이 뭐 있을까?
           }
         });
     },
@@ -190,6 +188,7 @@ h3 {
   border-bottom-width: 1;
   width: 100%;
   height: 40px;
+  margin: 15px 0px 15px 0px;
 }
 .checkbox {
   width: 20px;
@@ -206,5 +205,22 @@ h3 {
   font-size: 15px;
   background-color: rgb(163, 163, 163);
   cursor: pointer;
+}
+@media screen and (max-width: 500px) {
+  .log-in-container {
+    height: 700px;
+    display: inline-flex;
+  }
+  #sign_in {
+    position: inherit;
+  }
+  .signin-input-group {
+    display: block;
+    margin: 0px;
+  }
+  .signin-input {
+    width: 350px;
+    margin: 20px 0px 20px 0px;
+  }
 }
 </style>

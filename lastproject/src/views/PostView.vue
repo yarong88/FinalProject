@@ -3,6 +3,7 @@
     <postItem
       v-for="(post, i) in postList"
       v-bind:post-data="post"
+      v-bind:login-id="loginId"
       v-bind:key="i"
     />
   </div>
@@ -20,14 +21,18 @@ export default {
       postData: [],
       postList: [],
       scrollTop: "",
+      loginId: "",
     };
   },
   components: { postItem },
   mounted() {
+    if ("login-id" in window.localStorage) {
+      this.loginId = window.localStorage.getItem("login-id");
+    }
     // DB에서 데이터 받아오기
     axios
-      .post("/memoLoad", {
-        userId: "testId",
+      .post("/algorithmLoad", {
+        recommendPoint: 10,
       })
       .then((response) => {
         // 화살표 함수를 사용하면 this.를 사용할 수 있다.

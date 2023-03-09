@@ -12,8 +12,9 @@
         <div class="post-button-container">
           <div class="post-button-left">
             <i
+              ref="like_button"
               class="bi bi-emoji-kiss"
-              @click="[likeButton($event), testMethod()]"
+              @click="likeButton($event)"
             ></i>
             <i class="bi bi-chat" @click="modalOnOff"></i>
             <i class="bi bi-person-plus" @click="addToFriend($event)"></i>
@@ -42,13 +43,8 @@
       <div class="post-item-modal-body">
         <div class="source">
           <div class="canvas-container">
-            <p>Canvas:</p>
-            <img
-              class="detail-image"
-              :src="postData.contentImage"
-              alt=""
-              style="width: 600px; height: 400px"
-            />
+            <p class="canvas-title">Canvas:</p>
+            <img class="detail-image" :src="postData.contentImage" alt="" />
           </div>
           <div class="button-container">
             <p>Details :</p>
@@ -73,10 +69,22 @@
 
 <script>
 /* eslint-disable */
+import axios from "axios";
 export default {
   name: "postItem",
   props: {
     postData: Object,
+    loginId: String,
+  },
+  mounted() {
+    if (this.postData.likeIdList) {
+      for (let i = 0; i < this.postData.likeIdList.length; i++) {
+        if (this.loginId === this.postData.likeIdList[i]) {
+          this.$refs.like_button.style.color = "red";
+          return;
+        }
+      }
+    }
   },
   data() {
     return {
@@ -84,14 +92,21 @@ export default {
     };
   },
   methods: {
-    testMethod() {
-      console.log("test");
-    },
     likeButton(event) {
-      if (event.target.style.color == "black") {
-        event.target.style.color = "red";
-      } else {
+      const data = {
+        _id: this.postData._id,
+        userId: this.loginId,
+      };
+      if (event.target.style.color == "red") {
         event.target.style.color = "black";
+        axios.post("/delToLikeList", data).then((res) => {
+          console.log(res.data);
+        });
+      } else {
+        event.target.style.color = "red";
+        axios.post("/addToLikeList", data).then((res) => {
+          console.log(res.data);
+        });
       }
     },
     addToFriend(event) {
@@ -211,5 +226,26 @@ export default {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+}
+@media screen and (max-width: 500px) {
+  .post-container {
+    margin-bottom: 10px;
+  }
+  .post-item-modal-body {
+    width: 360px;
+    height: 680px;
+    bottom: 0px;
+  }
+  .post-item {
+    width: 370px;
+  }
+  .post-item {
+    height: 550px;
+  }
+  .post-image {
+    width: 360px;
+    height: 240px;
+    margin: auto;
+  }
 }
 </style>

@@ -10,6 +10,7 @@ const DataSchema = new Schema({
   writingTime: String,
   ratingScore: Number,
   recommendPoint: Number,
+  likeIdList: Array,
 });
 
 module.exports = mongoose.model("MemoData", DataSchema, "MemoData");

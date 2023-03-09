@@ -8,7 +8,7 @@
       <span>회원정보를 입력해주세요</span>
       <div class="info-input">
         <div class="input-group">
-          <span class="icon"
+          <span class="signup-icon-large"
             ><i class="fa fa-user fa-2x" aria-hidden="true"></i
           ></span>
           <input
@@ -33,7 +33,7 @@
           <br />
         </div>
         <div class="input-group">
-          <span class="icon"
+          <span class="signup-icon-large"
             ><i class="fa fa-lock fa-2x" aria-hidden="true"></i
           ></span>
           <input
@@ -52,7 +52,7 @@
           <br />
         </div>
         <div class="input-group">
-          <span class="icon">
+          <span class="signup-icon-large">
             <i class="fa fa-lock fa-2x" aria-hidden="true"></i
           ></span>
           <input
@@ -68,7 +68,7 @@
         </div>
         <br />
         <div class="input-group">
-          <span class="icon"
+          <span class="signup-icon-large"
             ><i class="fa fa-user fa-2x" aria-hidden="true"></i></span
           ><input
             ref="nick_input"
@@ -91,7 +91,7 @@
           <br />
         </div>
         <div class="input-group">
-          <span class="icon"
+          <span class="signup-icon-large"
             ><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></span
           ><input
             ref="email_input"
@@ -338,5 +338,37 @@ export default {
 .valid-text {
   color: red;
   font-size: small;
+}
+@media screen and (max-width: 500px) {
+  .sign-up-container {
+    height: 700px;
+    display: inline-flex;
+  }
+  #sign_up {
+    position: inherit;
+  }
+  .input-group {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+  }
+  .signup-icon-large {
+    display: flex;
+    align-items: center;
+  }
+  .sign-up-input {
+    width: 200px;
+    margin-top: 0;
+  }
+  .sign-up-input-password {
+    width: 250px;
+    margin-top: 0;
+  }
+  .check-valid {
+    margin-top: 0;
+  }
+  .sign-up-btn {
+    width: 250px;
+  }
 }
 </style>

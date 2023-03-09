@@ -143,6 +143,7 @@ app.post("/memoSave", (req, res) => {
     writingTime: req.body.writingTime,
     ratingScore: req.body.ratingScore,
     recommendPoint: req.body.recommendPoint,
+    likeIdList: req.body.likeIdList,
   };
   (async () => {
     const new_data = new MemoData(_data);
@@ -170,6 +171,7 @@ app.post("/memoUpdate", (req, res) => {
           writingTime: req.body.writingTime,
           ratingScore: req.body.ratingScore,
           recommendPoint: req.body.recommendPoint,
+          likeIdList: req.body.likeIdList,
         },
       },
       { upsert: true }
@@ -185,6 +187,19 @@ app.post("/memoLoad", (req, res) => {
   (async () => {
     const memo = await MemoData.find({
       userId: usetId,
+    }).lean();
+    return memo;
+  })().then((v) => {
+    res.send(v);
+  });
+});
+
+// db에서 추천수로 특정 메모 데이터 불러오기
+app.post("/algorithmLoad", (req, res) => {
+  const data = req.body.recommendPoint;
+  (async () => {
+    const memo = await MemoData.find({
+      recommendPoint: { $gte: data },
     }).lean();
     return memo;
   })().then((v) => {
@@ -211,6 +226,62 @@ app.post("/memoSearch", (req, res) => {
     return memo;
   })().then((v) => {
     res.send(v);
+  });
+});
+
+// 좋아요 아이디 리스트에 아이디 넣기
+app.post("/addToLikeList", (req, res) => {
+  (async () => {
+    const findList = await MemoData.find({
+      _id: req.body._id,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    v[0].likeIdList.push(req.body.userId);
+    (async () => {
+      await MemoData.updateOne(
+        {
+          _id: req.body._id,
+        },
+        {
+          $set: {
+            likeIdList: v[0].likeIdList,
+          },
+        },
+        { upsert: true }
+      );
+    })();
+    res.send("수정완료");
+  });
+});
+
+// 좋아요 아이디 리스트에 아이디 빼기
+app.post("/delToLikeList", (req, res) => {
+  (async () => {
+    const findList = await MemoData.find({
+      _id: req.body._id,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    for (let i = 0; i < v[0].likeIdList.length; i++) {
+      if (v[0].likeIdList[i] === req.body.userId) {
+        v[0].likeIdList.splice(i, 1);
+      }
+    }
+    (async () => {
+      await MemoData.updateOne(
+        {
+          _id: req.body._id,
+        },
+        {
+          $set: {
+            likeIdList: v[0].likeIdList,
+          },
+        },
+        { upsert: true }
+      );
+    })();
+    res.send("수정완료");
   });
 });
 

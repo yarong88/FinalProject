@@ -20,13 +20,11 @@
       ></span>
     </div>
   </div>
-  <br />
   <SearchResult
     v-if="status"
     v-bind:search-result="keyWord"
     v-bind:data-box="dataBox"
   />
-  <br />
   <RecentMemo v-if="recentMemoStatus" v-bind:recent-memo="recentDataBox" />
 </template>
 
@@ -122,5 +120,17 @@ export default {
 .search-img {
   height: 30px;
   widows: 30px;
+}
+@media screen and (max-width: 500px) {
+  #search {
+    width: 250px;
+  }
+  .recent-memo-container {
+    width: 375px;
+  }
+  .recent-memo-inner-container {
+    display: block;
+    width: 370px;
+  }
 }
 </style>
