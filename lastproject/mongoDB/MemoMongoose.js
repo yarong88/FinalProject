@@ -5,7 +5,7 @@ const MemoData = require("./MemoSchema.js");
 const USER = process.env.dbid;
 const PWD = process.env.dbpw;
 const HOST = process.env.dbhost;
-const DB = "MemoProject";
+const DB = "userdb";
 const mongodbURL = `mongodb://${USER}:${PWD}@${HOST}/${DB}`;
 // mongoose.set('useFindAndModify', false)
 // 6.0버전 이후로 자동관리되므로 삭제
