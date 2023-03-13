@@ -3,13 +3,14 @@ const Schema = mongoose.Schema;
 
 const DataSchema = new Schema({
   userId: String,
-  userPassword: String,
   contentText: Array,
   contentLongText: String,
   contentImage: String,
   writingTime: String,
   ratingScore: Number,
   recommendPoint: Number,
+  likeIdList: Array,
+  commentList: Array,
 });
 
 module.exports = mongoose.model("MemoData", DataSchema, "MemoData");

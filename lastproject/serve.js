@@ -131,17 +131,41 @@ app.post("/SignIn", (req, res) => {
   });
 });
 
+// 로그인 데이터 불러오기
+app.get("/loadLoginData/:user_id", (req, res) => {
+  const user_id = req.params.user_id;
+  (async () => {
+    const userIdFind = await UserData.find({ user_id }).lean();
+    return userIdFind;
+  })().then((v) => {
+    const loginData = {
+      user_id: v[0].user_id,
+      user_nickname: v[0].user_nickname,
+      user_email: v[0].user_email,
+
+      birth: v[0].birth,
+      gender: v[0].gender,
+      hobby: v[0].hobby,
+
+      friends_list: v[0].friends_list,
+      bookmark_list: v[0].bookmark_list,
+    };
+    res.send(loginData);
+  });
+});
+
 // db에 메모 저장
 app.post("/memoSave", (req, res) => {
   const _data = {
     userId: req.body.userId,
-    userPassword: req.body.userPassword,
     contentText: req.body.contentText,
     contentLongText: req.body.contentLongText,
     contentImage: req.body.contentImage,
     writingTime: req.body.writingTime,
     ratingScore: req.body.ratingScore,
     recommendPoint: req.body.recommendPoint,
+    likeIdList: req.body.likeIdList,
+    commentList: req.body.commentList,
   };
   (async () => {
     const new_data = new MemoData(_data);
@@ -162,13 +186,11 @@ app.post("/memoUpdate", (req, res) => {
       {
         $set: {
           userId: req.body.userId,
-          userPassword: req.body.userPassword,
           contentText: req.body.contentText,
           contentLongText: req.body.contentLongText,
           contentImage: req.body.contentImage,
           writingTime: req.body.writingTime,
           ratingScore: req.body.ratingScore,
-          recommendPoint: req.body.recommendPoint,
         },
       },
       { upsert: true }
@@ -185,6 +207,34 @@ app.post("/memoLoad", (req, res) => {
     const memo = await MemoData.find({
       userId: usetId,
     }).lean();
+    return memo;
+  })().then((v) => {
+    res.send(v);
+  });
+});
+
+// db에서 추천수로 특정 메모 데이터 불러오기
+app.post("/algorithmLoad", (req, res) => {
+  const data = req.body.recommendPoint;
+  // 최신 데이터 불러오기
+  (async () => {
+    const memo = await MemoData.find({
+      recommendPoint: { $gte: data },
+    })
+      .sort({ _id: -1 })
+      .limit(10)
+      .lean();
+    return memo;
+  })().then((v) => {
+    res.send(v);
+  });
+});
+
+// db에서 최신 메모 데이터 불러오기
+app.get("/recentMemoLoad", (req, res) => {
+  // 최신 데이터 불러오기
+  (async () => {
+    const memo = await MemoData.find({}).sort({ _id: -1 }).limit(10).lean();
     return memo;
   })().then((v) => {
     res.send(v);
@@ -210,6 +260,252 @@ app.post("/memoSearch", (req, res) => {
     return memo;
   })().then((v) => {
     res.send(v);
+  });
+});
+
+// 좋아요 아이디 리스트에 아이디 넣기
+app.post("/addToLikeList", (req, res) => {
+  (async () => {
+    // id 찾고
+    const findList = await MemoData.find({
+      _id: req.body._id,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    // 배열에 id push한 뒤 업데이트
+    v[0].likeIdList.push(req.body.userId);
+    const recommendPoint = v[0].likeIdList.length;
+    (async () => {
+      await MemoData.updateOne(
+        {
+          _id: req.body._id,
+        },
+        {
+          $set: {
+            likeIdList: v[0].likeIdList,
+            recommendPoint: recommendPoint,
+          },
+        },
+        { upsert: true }
+      );
+    })();
+    res.send("수정완료");
+  });
+});
+
+// 좋아요 아이디 리스트에 아이디 빼기
+app.post("/delToLikeList", (req, res) => {
+  (async () => {
+    const findList = await MemoData.find({
+      _id: req.body._id,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    let recommendPoint = 0;
+    // 배열에 id 찾아 splice
+    for (let i = 0; i < v[0].likeIdList.length; i++) {
+      if (v[0].likeIdList[i] === req.body.userId) {
+        v[0].likeIdList.splice(i, 1);
+        recommendPoint = v[0].likeIdList.length;
+      }
+    }
+    (async () => {
+      await MemoData.updateOne(
+        {
+          _id: req.body._id,
+        },
+        {
+          $set: {
+            likeIdList: v[0].likeIdList,
+            recommendPoint: recommendPoint,
+          },
+        },
+        { upsert: true }
+      );
+    })();
+    res.send("수정완료");
+  });
+});
+
+// 친구 추가 리스트에 아이디 넣기
+app.post("/addToFriendsList", (req, res) => {
+  (async () => {
+    // id 찾고
+    const findList = await UserData.find({
+      user_id: req.body.hostId,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    // 배열에 id push한 뒤 업데이트
+    v[0].friends_list.push(req.body.memoId);
+    (async () => {
+      await UserData.updateOne(
+        {
+          user_id: req.body.hostId,
+        },
+        {
+          $set: {
+            friends_list: v[0].friends_list,
+          },
+        },
+        { upsert: true }
+      );
+    })();
+    res.send("수정완료");
+  });
+});
+
+// 좋아요 아이디 리스트에 아이디 빼기
+app.post("/delToFriendsList", (req, res) => {
+  (async () => {
+    const findList = await UserData.find({
+      user_id: req.body.hostId,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    // 배열에 id 찾아 splice
+    for (let i = 0; i < v[0].friends_list.length; i++) {
+      if (v[0].friends_list[i] === req.body.memoId) {
+        v[0].friends_list.splice(i, 1);
+      }
+    }
+    (async () => {
+      await UserData.updateOne(
+        {
+          user_id: req.body.hostId,
+        },
+        {
+          $set: {
+            friends_list: v[0].friends_list,
+          },
+        },
+        { upsert: true }
+      );
+    })();
+    res.send("수정완료");
+  });
+});
+
+// 북마크 리스트에 게시물 아이디 넣기
+app.post("/addToBookmarkList", (req, res) => {
+  (async () => {
+    // id 찾고
+    const findList = await UserData.find({
+      user_id: req.body.hostId,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    // 배열에 id push한 뒤 업데이트
+    v[0].bookmark_list.push(req.body.memoId);
+    (async () => {
+      await UserData.updateOne(
+        {
+          user_id: req.body.hostId,
+        },
+        {
+          $set: {
+            bookmark_list: v[0].bookmark_list,
+          },
+        },
+        { upsert: true }
+      );
+    })();
+    res.send("수정완료");
+  });
+});
+
+// 북마크 리스트에 게시물 아이디 빼기
+app.post("/delToBookmarkList", (req, res) => {
+  (async () => {
+    const findList = await UserData.find({
+      user_id: req.body.hostId,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    // 배열에 id 찾아 splice
+    for (let i = 0; i < v[0].bookmark_list.length; i++) {
+      if (v[0].bookmark_list[i] === req.body.memoId) {
+        v[0].bookmark_list.splice(i, 1);
+      }
+    }
+    (async () => {
+      await UserData.updateOne(
+        {
+          user_id: req.body.hostId,
+        },
+        {
+          $set: {
+            bookmark_list: v[0].bookmark_list,
+          },
+        },
+        { upsert: true }
+      );
+    })();
+    res.send("수정완료");
+  });
+});
+
+// 댓글 달기
+app.post("/addCommentText", (req, res) => {
+  (async () => {
+    // id 찾고
+    const findList = await MemoData.find({
+      _id: req.body._id,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    // 배열에 id push한 뒤 업데이트
+    const commentData = {
+      user_nickname: req.body.user_nickname,
+      commentText: req.body.commentText,
+      commentTime: req.body.commentTime,
+    };
+    v[0].commentList.push(commentData);
+    (async () => {
+      await MemoData.updateOne(
+        {
+          _id: req.body._id,
+        },
+        {
+          $set: {
+            commentList: v[0].commentList,
+          },
+        }
+      );
+    })();
+    res.send("수정완료");
+  });
+});
+
+// 댓글 지우기
+app.post("/delCommentText", (req, res) => {
+  (async () => {
+    // id 찾고
+    const findList = await MemoData.find({
+      _id: req.body._id,
+    }).lean();
+    return findList;
+  })().then((v) => {
+    v[0].commentList[0].commentTime;
+    // 배열에 id 찾아 splice
+    for (let i = 0; i < v[0].commentList.length; i++) {
+      if (v[0].commentList[i].commentTime === req.body.commentTime) {
+        v[0].commentList.splice(i, 1);
+      }
+    }
+    (async () => {
+      await MemoData.updateOne(
+        {
+          _id: req.body._id,
+        },
+        {
+          $set: {
+            commentList: v[0].commentList,
+          },
+        }
+      );
+    })();
+    res.send("수정완료");
   });
 });
 

@@ -11,6 +11,9 @@ const userSchema = new Schema({
   gender: String,
   hobby: String,
   // id: Number,
+
+  friends_list: Array,
+  bookmark_list: Array,
   create_date: { type: Date, default: Date.now },
 });
 

@@ -20,13 +20,11 @@
       ></span>
     </div>
   </div>
-  <br />
   <SearchResult
     v-if="status"
     v-bind:search-result="keyWord"
     v-bind:data-box="dataBox"
   />
-  <br />
   <RecentMemo v-if="recentMemoStatus" v-bind:recent-memo="recentDataBox" />
 </template>
 
@@ -51,12 +49,12 @@ export default {
     };
   },
   mounted() {
-    if ("login-id" in window.localStorage) {
-      const loginId = window.localStorage.getItem("login-id");
+    if ("login-data" in window.localStorage) {
+      const logindData = JSON.parse(window.localStorage.getItem("login-data"));
       // DB에서 데이터 받아오기
       axios
         .post("/memoLoad", {
-          userId: loginId,
+          userId: logindData.user_id,
         })
         .then((response) => {
           // 화살표 함수를 사용하면 this.를 사용할 수 있다.
@@ -122,5 +120,17 @@ export default {
 .search-img {
   height: 30px;
   widows: 30px;
+}
+@media screen and (max-width: 500px) {
+  #search {
+    width: 250px;
+  }
+  .recent-memo-container {
+    width: 375px;
+  }
+  .recent-memo-inner-container {
+    display: block;
+    width: 370px;
+  }
 }
 </style>

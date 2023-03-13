@@ -8,7 +8,7 @@
       <span>회원정보를 입력해주세요</span>
       <div class="info-input">
         <div class="input-group">
-          <span class="icon"
+          <span class="signup-icon-large"
             ><i class="fa fa-user fa-2x" aria-hidden="true"></i
           ></span>
           <input
@@ -33,7 +33,7 @@
           <br />
         </div>
         <div class="input-group">
-          <span class="icon"
+          <span class="signup-icon-large"
             ><i class="fa fa-lock fa-2x" aria-hidden="true"></i
           ></span>
           <input
@@ -52,7 +52,7 @@
           <br />
         </div>
         <div class="input-group">
-          <span class="icon">
+          <span class="signup-icon-large">
             <i class="fa fa-lock fa-2x" aria-hidden="true"></i
           ></span>
           <input
@@ -68,7 +68,7 @@
         </div>
         <br />
         <div class="input-group">
-          <span class="icon"
+          <span class="signup-icon-large"
             ><i class="fa fa-user fa-2x" aria-hidden="true"></i></span
           ><input
             ref="nick_input"
@@ -91,7 +91,7 @@
           <br />
         </div>
         <div class="input-group">
-          <span class="icon"
+          <span class="signup-icon-large"
             ><i class="fa fa-envelope fa-2x" aria-hidden="true"></i></span
           ><input
             ref="email_input"
@@ -186,8 +186,8 @@ export default {
       }
     },
     nickValid() {
-      if (/^[A-Za-z0-9].+$/.test(this.user.nickname)) {
-        // 영문/숫자
+      if (/^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|\s]*$/.test(this.user.nickname)) {
+        // 영문/숫자/한글
         this.nickValidFlag = true;
       } else {
         this.nickValidFlag = false;
@@ -225,6 +225,8 @@ export default {
             user_pwd: this.user.password,
             user_nickname: this.user.nickname,
             user_email: this.user.email,
+            friends_list: [],
+            bookmark_list: [],
           })
           .then((response) => {
             if (response.data == "회원가입성공") {
@@ -338,5 +340,37 @@ export default {
 .valid-text {
   color: red;
   font-size: small;
+}
+@media screen and (max-width: 500px) {
+  .sign-up-container {
+    height: 700px;
+    display: inline-flex;
+  }
+  #sign_up {
+    position: inherit;
+  }
+  .input-group {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+  }
+  .signup-icon-large {
+    display: flex;
+    align-items: center;
+  }
+  .sign-up-input {
+    width: 200px;
+    margin-top: 0;
+  }
+  .sign-up-input-password {
+    width: 250px;
+    margin-top: 0;
+  }
+  .check-valid {
+    margin-top: 0;
+  }
+  .sign-up-btn {
+    width: 250px;
+  }
 }
 </style>

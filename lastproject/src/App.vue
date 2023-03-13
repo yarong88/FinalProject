@@ -59,7 +59,37 @@
     <div class="my-page-modal-background" @click="myPageModalOff"></div>
     <div class="my-page-modal">
       <div class="my-page-modal-body">
-        <button @click="logout">로그아웃</button>
+        <div class="user-info">
+          <div class="profile-img">
+            <i class="fa fa-user-o fa-3x" aria-hidden="true"></i>
+          </div>
+          <div class="p-nickname">{{ user_nickname }}</div>
+          <div class="p-email">{{ user_email }}</div>
+        </div>
+        <div class="profile-wrap">
+          <button
+            v-if="myPageModalStatus"
+            class="modal-btn"
+            @click="editProfile"
+          >
+            <i class="fa fa-pencil" aria-hidden="true"></i>&nbsp;프로필 편집
+          </button>
+        </div>
+        <div class="bookmark-wrap">
+          <button class="modal-btn">
+            <i class="fa fa-bookmark" aria-hidden="true"></i>&nbsp;북마크
+          </button>
+        </div>
+        <div class="friend-wrap">
+          <button class="modal-btn">
+            <i class="fa fa-list" aria-hidden="true"></i>&nbsp;친구목록
+          </button>
+        </div>
+        <div class="logout-wrap">
+          <button class="modal-btn" @click="logout">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;로그아웃
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -75,10 +105,26 @@ export default {
       st: true,
       logInStatus: true,
       myPageModalStatus: false,
+      user_nickname: "",
+      user_id: "",
     };
   },
+  watch: {
+    $route(to, from) {
+      if (to.path !== from.path) {
+        // console.log(to.path, from.path)
+        if (to.path === "/") {
+          this.$router.go();
+        }
+        window.scroll(0, 0);
+      }
+    },
+  },
   mounted() {
-    if ("login-id" in window.localStorage) {
+    if ("login-data" in window.localStorage) {
+      const loginData = JSON.parse(localStorage.getItem("login-data"));
+      this.user_nickname = loginData.user_nickname;
+      this.user_email = loginData.user_email;
       this.logInStatus = false;
     }
   },
@@ -95,8 +141,12 @@ export default {
       document.body.style.overflow = "auto";
     },
     logout() {
-      window.localStorage.removeItem("login-id");
+      window.localStorage.removeItem("login-data");
       window.location.reload();
+    },
+    editProfile() {
+      this.$router.push("./EditProfile");
+      this.myPageModalStatus = false;
     },
   },
 };
@@ -126,7 +176,7 @@ nav a.router-link-exact-active {
   text-align: center;
   height: 80px;
   width: 100%;
-  background: rgb(240, 221, 196);
+  background: #caecff;
 }
 .inner-header {
   width: 1000px;
@@ -181,20 +231,86 @@ li {
 }
 .my-page-modal-body {
   position: fixed;
-  top: 0;
-  bottom: 250px;
-  left: 700px;
+  /* top: 0; */
+  top: 78px;
+  left: 528px;
   right: 0;
   margin: auto;
   width: 300px;
-  height: 500px;
+  height: 391px;
   text-align: start;
-  background-color: white;
+  background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+}
+.profile-img {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #cfcfcf;
+  margin-top: 45px;
+  margin-left: 36.5%;
+}
+.p-nickname {
+  margin-top: 17px;
+}
+.p-email {
+  margin-top: 10px;
+}
+.user-info {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.profile-edit {
+  margin-top: 20px;
+}
+.modal-btn {
+  /* position: relative; */
+  border: 0px;
+  width: 100%;
+  height: 30px;
+  background-color: #fff;
+}
+.modal-btn:hover {
+  background-color: #d8d8d8;
+}
+.modal-btn > i {
+  margin-right: 6px;
 }
 .footer {
   background: #777777;
   height: 80px;
+}
+@media screen and (max-width: 500px) {
+  .header {
+    height: 50px;
+  }
+  .header-text {
+    display: none;
+  }
+  .header-img {
+    width: 30px;
+    height: 30px;
+    margin: 10px 20px;
+    vertical-align: top;
+  }
+  .header-icon {
+    width: 20px;
+    height: 20px;
+    margin: 15px 20px 0px 0px;
+  }
+  .header-icon-test {
+    width: 20px;
+    height: 20px;
+    margin: 15px 20px 0px 0px;
+  }
+  .my-page-modal-body {
+    bottom: 300px;
+    left: 140px;
+    width: 250px;
+  }
 }
 </style>

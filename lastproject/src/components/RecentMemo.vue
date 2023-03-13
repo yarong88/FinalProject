@@ -7,10 +7,10 @@
         v-bind:key="data"
         @click="recentMemoModalOn(data)"
       >
-        <div style="font-size: large; margin: 10px">
+        <div class="recent-memo-title">
           {{ data.contentText[0] }}
         </div>
-        <img :src="data.contentImage" alt="" style="width: 60%; height: 60%" />
+        <img class="recent-memo-image" :src="data.contentImage" alt="" />
         <div style="font-size: small">{{ data.writingTime }}</div>
       </div>
     </div>
@@ -21,12 +21,11 @@
       <div class="post-item-modal-body">
         <div class="source">
           <div class="canvas-container">
-            <p>Canvas:</p>
+            <p class="canvas-title">Canvas:</p>
             <img
               class="detail-image"
               :src="recentMemoModalData.contentImage"
               alt=""
-              style="width: 600px; height: 400px"
             />
           </div>
           <div class="button-container">
@@ -39,7 +38,7 @@
             </div>
             <div>{{ recentMemoModalData.writingTime }}</div>
             <span>{{ recentMemoModalData.ratingScore }}점</span>
-            <span>추천 : {{ recentMemoModalData.recommendPoint }}</span>
+            <span>추천 : {{ recentMemoModalData.likeIdList.length }}</span>
             <button @click="recentMemoModalOff">모달창 닫기</button>
           </div>
         </div>
@@ -88,14 +87,29 @@ export default {
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 400px;
-  background-color: rgb(179, 179, 179);
+  background-color: #e1e1e1;
 }
 .recent-memo {
   width: 300px;
-  height: 200px;
+  height: 250px;
   margin: auto;
-  background-color: rgb(230, 230, 230);
+  background-image: url("../assets/memo_background.png");
+  background-size: 100% 120%;
+  /* background-color: #f1f1f1;
   border-radius: 15px;
-  box-shadow: 3px 3px 3px rgb(192, 192, 192);
+  box-shadow: 3px 3px 3px rgb(192, 192, 192); */
+}
+.recent-memo-title {
+  width: 150px;
+  font-size: large;
+  margin-top: 65px;
+  margin-left: 75px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.recent-memo-image {
+  width: 180px;
+  height: 120px;
 }
 </style>
