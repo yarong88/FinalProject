@@ -231,6 +231,21 @@ app.post('/memoSearch', (req, res) => {
     res.send(v)
   })
 })
+// 모달창 닉네임 읽어오기
+app.get('/nickr/:user_id', (req, res) => {
+  // const user_id = localStorage.getItem("login-id")
+  const user_id = req.params.user_id
+  console.log(user_id)
+  const nickread = async () => {
+    const t = await UserData.findOne({ user_id }, { _id: 0, __v: 0 })
+      .lean()
+    return t
+  }
+  nickread().then(v => {
+    console.log(v)
+    res.send(v)
+  })
+})
 
 app.listen(port, () => {
   console.log(port + '에서 서버 동작 완료.')

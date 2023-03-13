@@ -59,9 +59,36 @@
     <div class="my-page-modal-background" @click="myPageModalOff"></div>
     <div class="my-page-modal">
       <div class="my-page-modal-body">
+        <div class="user-info">
+          <div class="profile-img">
+            <i class="fa fa-user-o fa-3x" aria-hidden="true"></i>
+          </div>
+          <div class="p-nickname">{{ user_nickname }}</div>
+          <div class="p-email">{{ user_email }}</div>
+        </div>
+        <div class="profile-wrap">
+          <button
+            v-if="myPageModalStatus"
+            class="modal-btn"
+            @click="editProfile"
+          >
+            <i class="fa fa-pencil" aria-hidden="true"></i>&nbsp;프로필 편집
+          </button>
+        </div>
+        <div class="bookmark-wrap">
+          <button class="modal-btn">
+            <i class="fa fa-bookmark" aria-hidden="true"></i>&nbsp;북마크
+          </button>
+        </div>
+        <div class="friend-wrap">
+          <button class="modal-btn">
+            <i class="fa fa-list" aria-hidden="true"></i>&nbsp;친구목록
+          </button>
+        </div>
         <div class="logout-wrap">
-          <i class="fa fa-sign-out" aria-hidden="true"></i>
-          <button class="logout-btn" @click="logout">로그아웃</button>
+          <button class="modal-btn" @click="logout">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;로그아웃
+          </button>
         </div>
       </div>
     </div>
@@ -72,12 +99,16 @@
 
 <script>
 /* eslint-disable */
+import axios from "axios";
+
 export default {
   data() {
     return {
       st: true,
       logInStatus: true,
       myPageModalStatus: false,
+      user_nickname: "",
+      user_id: localStorage.getItem("login-id"),
     };
   },
   mounted() {
@@ -92,6 +123,15 @@ export default {
     myPageModalOn() {
       this.myPageModalStatus = true;
       document.body.style.overflow = "hidden";
+      axios.get("/nickr/" + this.user_id).then((res) => {
+        this.user_nickname = res.data.user_nickname;
+        this.user_email = res.data.user_email;
+      });
+      // axios
+      //   .post("/nickr", {
+      //     user_id: this.user_id,
+      //   })
+      //   .then((res) => {});
     },
     myPageModalOff() {
       this.myPageModalStatus = false;
@@ -100,6 +140,10 @@ export default {
     logout() {
       window.localStorage.removeItem("login-id");
       window.location.reload();
+    },
+    editProfile() {
+      this.$router.push("./EditProfile");
+      this.myPageModalStatus = false;
     },
   },
 };
@@ -184,25 +228,54 @@ li {
 }
 .my-page-modal-body {
   position: fixed;
-  top: 0;
-  bottom: 250px;
-  left: 700px;
+  /* top: 0; */
+  top: 78px;
+  left: 528px;
   right: 0;
   margin: auto;
   width: 300px;
-  height: 500px;
+  height: 391px;
   text-align: start;
-  background-color: white;
+  background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
 }
-.logout-btn {
+.profile-img {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #cfcfcf;
+  margin-top: 45px;
+  margin-left: 36.5%;
+}
+.p-nickname {
+  margin-top: 17px;
+}
+.p-email {
+  margin-top: 10px;
+}
+.user-info {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.profile-edit {
+  margin-top: 20px;
+}
+.modal-btn {
+  /* position: relative; */
   border: 0px;
   width: 100%;
   height: 30px;
+  background-color: #fff;
 }
-.logout-btn:hover {
-  background-color: #c0c0c0;
+.modal-btn:hover {
+  background-color: #d8d8d8;
+}
+.modal-btn > i {
+  margin-right: 6px;
 }
 .footer {
   background: #777777;
