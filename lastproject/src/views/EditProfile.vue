@@ -15,9 +15,8 @@
         <input
           type="text"
           class="editpro_input"
-          :placeholder="user.loadNickname"
-          v-model="user.newNickname"
-          :value="user.newNickname"
+          v-model="user.nickname"
+          :value="user.nickname"
         />
       </div>
 
@@ -26,9 +25,8 @@
         <input
           type="text"
           class="editpro_input"
-          :placeholder="user.loadEmail"
-          v-model="user.newEmail"
-          :value="user.newEmail"
+          v-model="user.email"
+          :value="user.email"
         />
       </div>
 
@@ -45,43 +43,37 @@
 
       <div class="hobby-wrap">
         <div class="title">취미</div>
-        <select name="hobby" id="">
+        <select name="hobby" class="selectbox">
           <option v-for="hobby in hobbys" :key="hobby">{{ hobby }}</option>
         </select>
       </div>
-      <button class="profile-save" @click="profile_save">Save</button>
+      <button class="profile-save" @click="profile_save">Modify</button>
     </div>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
+import axios from "axios";
 export default {
   name: "app",
   data() {
     return {
       user: {
-        loadNickname: "",
-        loadEmail: "",
-        newNickname: "",
-        newEmail: "",
+        id: localStorage.getItem("login-id"),
+        nickname: "abc",
+        email: "@@@@",
       },
       hobbys: ["운동하기", "노래듣기"],
     };
   },
-  mounted() {
-    if ("login-data" in window.localStorage) {
-      const loginData = JSON.parse(localStorage.getItem("login-data"));
-      console.log(loginData);
-      this.user.loadNickname = loginData.user_nickname;
-      this.user.loadEmail = loginData.user_email;
-    }
-  },
+
   methods: {
     value() {
-      axios.get("/nickr/" + this.user_id).then((res) => {
-        this.user_nickname = res.data.user_nickname;
-        this.user_email = res.data.user_email;
+      axios.get("/nickr/" + this.user.id).then((res) => {
+        this.user.nickname = res.data.user_nickname;
+        this.user.email = res.data.user_email;
+        this.aa = res.data.user_nickname;
       });
     },
     readURL(input) {
@@ -95,6 +87,10 @@ export default {
         document.getElementsByClassName("profile-edit").src = "";
       }
     },
+  },
+
+  mounted() {
+    this.value();
   },
 };
 </script>
@@ -138,7 +134,7 @@ h3 {
   margin-left: 20px;
 }
 .title {
-  margin-left: 35px;
+  margin-left: 20px;
   text-align: start;
 }
 .editpro_input {
@@ -147,7 +143,7 @@ h3 {
   border-right-width: 0;
   border-top-width: 0;
   border-bottom-width: 1;
-  width: 80%;
+  width: 90%;
   height: 40px;
   margin-bottom: 25px;
 }
@@ -155,8 +151,15 @@ h3 {
   margin-bottom: 20px;
 }
 .profile-save {
+  width: 90%;
+  height: 40px;
   margin-top: 30px;
-  width: 100%;
-  height: 20px;
+  background-color: rgb(163, 163, 163);
+  cursor: pointer;
+}
+.selectbox {
+  width: 200px;
+  text-align: center;
+  height: 30px;
 }
 </style>

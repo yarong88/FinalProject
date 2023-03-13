@@ -5,7 +5,7 @@ const UserData = require("./UserSchema.js");
 const USER = process.env.dbid;
 const PWD = process.env.dbpw;
 const HOST = process.env.dbhost;
-const DB = "MemoProject";
+const DB = "userdb";
 const mongodbURL = `mongodb://${USER}:${PWD}@${HOST}/${DB}`;
 
 // mongoose.set('useFindAndModify', false);    //6.0이후부터는 자동관리
