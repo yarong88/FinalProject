@@ -49,12 +49,12 @@ export default {
     };
   },
   mounted() {
-    if ("login-id" in window.localStorage) {
-      const loginId = window.localStorage.getItem("login-id");
+    if ("login-data" in window.localStorage) {
+      const logindData = JSON.parse(window.localStorage.getItem("login-data"));
       // DB에서 데이터 받아오기
       axios
         .post("/memoLoad", {
-          userId: loginId,
+          userId: logindData.user_id,
         })
         .then((response) => {
           // 화살표 함수를 사용하면 this.를 사용할 수 있다.

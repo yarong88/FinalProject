@@ -17,10 +17,18 @@
               @click="likeButton($event)"
             ></i>
             <i class="bi bi-chat" @click="modalOnOff"></i>
-            <i class="bi bi-person-plus" @click="addToFriend($event)"></i>
+            <i
+              ref="friend_button"
+              class="bi bi-person-plus"
+              @click="addToFriend($event)"
+            ></i>
           </div>
           <div class="post-button-right">
-            <i class="bi bi-bookmarks" @click="addBookmark($event)"></i>
+            <i
+              ref="bookmarks_button"
+              class="bi bi-bookmarks"
+              @click="addBookmark($event)"
+            ></i>
           </div>
         </div>
         <hr />
@@ -33,10 +41,18 @@
       <hr />
       <div class="post-footer">
         <i class="bi bi-chat-dots"></i>
-        <input type="text" />
+        <input
+          class="comment-text"
+          ref="commentText"
+          type="text"
+          v-model="commentText"
+          @keyup.enter="addCommentText()"
+          placeholder="Enter를 입력하면 저장됩니다."
+        />
       </div>
     </div>
   </div>
+  <!-- 모달창 시작 -->
   <div class="post-item-modal-container" v-if="modalStatus">
     <div class="post-item-modal-background" @click="modalOnOff"></div>
     <div class="post-item-modal">
@@ -56,15 +72,26 @@
             </div>
             <div>{{ postData.writingTime }}</div>
             <span>{{ postData.ratingScore }}점</span>
-            <span>추천 : {{ postData.recommendPoint }}</span>
+            <span>추천 : {{ postData.likeIdList.length }}</span>
             <!-- <button @click="imgModify(postData)">수정하기</button>
           <button @click="imgDelete(postData)">삭제하기</button> -->
             <button @click="modalOnOff">모달창 닫기</button>
+            <!-- 댓글 -->
+            <div class="comment-box">
+              <div v-for="(comment, i) in postData.commentList" :key="i">
+                <span class="comment-name">{{ comment.user_nickname }} : </span>
+                <span class="comment-text">{{ comment.commentText }}</span>
+                <br />
+                <span class="comment-time">{{ comment.commentTime }}</span>
+                <button @click="delComment(comment)">삭제</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- 모달창 끝 -->
 </template>
 
 <script>
@@ -74,14 +101,27 @@ export default {
   name: "postItem",
   props: {
     postData: Object,
-    loginId: String,
+    loginData: Object,
   },
   mounted() {
     if (this.postData.likeIdList) {
       for (let i = 0; i < this.postData.likeIdList.length; i++) {
-        if (this.loginId === this.postData.likeIdList[i]) {
+        if (this.loginData.user_id === this.postData.likeIdList[i]) {
           this.$refs.like_button.style.color = "red";
-          return;
+        }
+      }
+    }
+    if (this.loginData.friends_list) {
+      for (let i = 0; i < this.loginData.friends_list.length; i++) {
+        if (this.postData.userId === this.loginData.friends_list[i]) {
+          this.$refs.friend_button.className = "bi bi-person-plus-fill";
+        }
+      }
+    }
+    if (this.loginData.bookmark_list) {
+      for (let i = 0; i < this.loginData.bookmark_list.length; i++) {
+        if (this.postData._id === this.loginData.bookmark_list[i]) {
+          this.$refs.bookmarks_button.className = "bi bi-bookmarks-fill";
         }
       }
     }
@@ -89,6 +129,7 @@ export default {
   data() {
     return {
       modalStatus: false,
+      commentText: "",
     };
   },
   methods: {
@@ -96,7 +137,7 @@ export default {
     likeButton(event) {
       const data = {
         _id: this.postData._id, // 게시물 id
-        userId: this.loginId, // 좋아요 버튼 누르는 사람의 id
+        userId: this.loginData.user_id, // 좋아요 버튼 누르는 사람의 id
       };
       if (event.target.style.color == "red") {
         event.target.style.color = "black"; // 빨 -> 검
@@ -110,20 +151,43 @@ export default {
         });
       }
     },
+    // 친구추가 버튼
     addToFriend(event) {
+      const data = {
+        memoId: this.postData.userId, // 게시물 userId
+        hostId: this.loginData.user_id, // 친구추가 버튼 누르는 사람의 id
+      };
       if (event.target.className == "bi bi-person-plus") {
         event.target.className = "bi bi-person-plus-fill";
+        axios.post("/addToFriendsList", data).then((res) => {
+          console.log(res.data);
+        });
       } else {
         event.target.className = "bi bi-person-plus";
+        axios.post("/delToFriendsList", data).then((res) => {
+          console.log(res.data);
+        });
       }
     },
+    // 북마크 버튼
     addBookmark(event) {
+      const data = {
+        memoId: this.postData._id, // 게시물 _id
+        hostId: this.loginData.user_id, // 친구추가 버튼 누르는 사람의 id
+      };
       if (event.target.className == "bi bi-bookmarks") {
         event.target.className = "bi bi-bookmarks-fill";
+        axios.post("/addToBookmarkList", data).then((res) => {
+          console.log(res.data);
+        });
       } else {
         event.target.className = "bi bi-bookmarks";
+        axios.post("/delToBookmarkList", data).then((res) => {
+          console.log(res.data);
+        });
       }
     },
+    // 모달창
     modalOnOff() {
       this.modalStatus = !this.modalStatus;
       const body = document.getElementsByTagName("body")[0];
@@ -132,6 +196,33 @@ export default {
       } else {
         body.classList.add("scroll-lock");
       }
+    },
+    // 댓글 달기
+    addCommentText() {
+      const data = {
+        _id: this.postData._id,
+        user_nickname: this.loginData.user_nickname,
+        commentText: this.commentText,
+        commentTime: new Date(),
+      };
+      axios.post("/addCommentText", data).then((res) => {
+        console.log(res.data);
+        // 새로고침
+        window.location.reload();
+      });
+    },
+    delComment(comment) {
+      const data = {
+        _id: this.postData._id,
+        user_nickname: comment.user_nickname,
+        commentText: comment.commentText,
+        commentTime: comment.commentTime,
+      };
+      axios.post("/delCommentText", data).then((res) => {
+        console.log(res.data);
+        // 새로고침
+        window.location.reload();
+      });
     },
   },
 };

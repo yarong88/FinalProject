@@ -333,7 +333,7 @@
             </div>
             <div>{{ detailBox.writingTime }}</div>
             <span>{{ detailBox.ratingScore }}점</span>
-            <span>추천 : {{ detailBox.recommendPoint }}</span>
+            <span>추천 : {{ detailBox.likeIdList.length }}</span>
             <button @click="imgModify(detailBox)">수정하기</button>
             <button @click="imgDelete(detailBox)">삭제하기</button>
           </div>
@@ -346,7 +346,7 @@
           <div
             class="thumbnail"
             @click="mainOnOff(data)"
-            v-for="data of sideDateBox"
+            v-for="data of sideDataBox"
             v-bind:key="data"
           >
             <div class="thumbnail-title">
@@ -423,7 +423,7 @@ export default {
       textBox: [],
       finalText: "",
       dataBox: [],
-      sideDateBox: [],
+      sideDataBox: [],
       detailBox: [],
       idModify: "",
       loadedText: [],
@@ -439,21 +439,23 @@ export default {
       this.mobileStatus = true;
     }
     // 로그인 상태
-    if ("login-id" in window.localStorage) {
-      this.loginId = window.localStorage.getItem("login-id");
+    if ("login-data" in window.localStorage) {
+      const logindData = JSON.parse(window.localStorage.getItem("login-data"));
+      console.log(logindData);
       // DB에서 데이터 받아오기
+      this.loginId = logindData.user_id;
       axios
         .post("/memoLoad", {
-          userId: this.loginId,
+          userId: logindData.user_id,
         })
         .then((response) => {
           // 화살표 함수를 사용하면 this.를 사용할 수 있다.
           this.dataBox = response.data;
           // DB에서 받은 데이터를 최신순으로 10개까지 정렬
           if (this.dataBox.length >= 10) {
-            this.sideDateBox = [...this.dataBox].slice(-10).reverse();
+            this.sideDataBox = [...this.dataBox].slice(-10).reverse();
           } else {
-            this.sideDateBox = [...this.dataBox].reverse();
+            this.sideDataBox = [...this.dataBox].reverse();
           }
         })
         .catch(function (error) {
@@ -466,8 +468,8 @@ export default {
       "temporary-text-storage" in window.localStorage ||
       "temporary-image-storage" in window.localStorage
     ) {
-      const temporaryTextBox = window.localStorage.getItem(
-        "temporary-text-storage"
+      const temporaryTextBox = JSON.parse(
+        window.localStorage.getItem("temporary-text-storage")
       );
       if (typeof temporaryTextBox === "string") {
         this.textBox.push(temporaryTextBox);
@@ -647,8 +649,6 @@ export default {
               contentImage: this.image, // 이미지
               writingTime: new Date(), // 작성시각
               ratingScore: 3, // 별점
-              recommendPoint: 10, // 추천수
-              likeIdList: [],
             };
             // axios post로 저장할 데이터 서버로 전송
             axios
@@ -668,8 +668,9 @@ export default {
               contentImage: this.image, // 이미지
               writingTime: new Date(), // 작성시각
               ratingScore: 0, // 별점
-              recommendPoint: 0, // 추천수
+              recommendPoint: 0,
               likeIdList: [],
+              commentList: [],
             };
             // axios post로 서버 속 데이터 업데이트
             axios
@@ -687,7 +688,8 @@ export default {
         }
       } else {
         if (window.confirm("로그아웃 상태입니다. 로그인하시겠습니까?")) {
-          window.localStorage.setItem("temporary-text-storage", this.textBox);
+          const storageText = JSON.stringify(this.textBox);
+          window.localStorage.setItem("temporary-text-storage", storageText);
           window.localStorage.setItem("temporary-image-storage", this.image);
           this.$router.push("/LogIn");
         }

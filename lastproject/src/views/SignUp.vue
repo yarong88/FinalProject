@@ -186,8 +186,8 @@ export default {
       }
     },
     nickValid() {
-      if (/^[A-Za-z0-9].+$/.test(this.user.nickname)) {
-        // 영문/숫자
+      if (/^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|\s]*$/.test(this.user.nickname)) {
+        // 영문/숫자/한글
         this.nickValidFlag = true;
       } else {
         this.nickValidFlag = false;
@@ -225,6 +225,8 @@ export default {
             user_pwd: this.user.password,
             user_nickname: this.user.nickname,
             user_email: this.user.email,
+            friends_list: [],
+            bookmark_list: [],
           })
           .then((response) => {
             if (response.data == "회원가입성공") {

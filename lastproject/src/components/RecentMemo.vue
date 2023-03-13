@@ -38,7 +38,7 @@
             </div>
             <div>{{ recentMemoModalData.writingTime }}</div>
             <span>{{ recentMemoModalData.ratingScore }}점</span>
-            <span>추천 : {{ recentMemoModalData.recommendPoint }}</span>
+            <span>추천 : {{ recentMemoModalData.likeIdList.length }}</span>
             <button @click="recentMemoModalOff">모달창 닫기</button>
           </div>
         </div>

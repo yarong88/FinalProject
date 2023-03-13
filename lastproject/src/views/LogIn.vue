@@ -84,8 +84,8 @@ export default {
       //   } else {
       //     alert("로그인 실패");
       //   }
-      console.log(this.user.id);
-      console.log(this.user.password);
+      // console.log(this.user.id);
+      // console.log(this.user.password);
       axios
         .post("/SignIn", {
           user_id: this.user.id,
@@ -98,7 +98,10 @@ export default {
             alert("비번 틀림");
           } else if (response.data == "login_success") {
             alert("로그인 성공");
-            window.localStorage.setItem("login-id", this.user.id);
+            axios.get("/loadLoginData/" + this.user.id).then((res) => {
+              const loginData = JSON.stringify(res.data);
+              window.localStorage.setItem("login-data", loginData);
+            });
             this.$router.push("/"); // 메인 페이지로 보내줌
           }
         });

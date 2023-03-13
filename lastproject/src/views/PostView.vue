@@ -3,7 +3,7 @@
     <postItem
       v-for="(post, i) in postList"
       v-bind:post-data="post"
-      v-bind:login-id="loginId"
+      v-bind:login-data="loginData"
       v-bind:key="i"
     />
   </div>
@@ -18,30 +18,56 @@ export default {
   name: "postList",
   data() {
     return {
+      algorithmLoadMemo: [],
+      recentLoadMemo: [],
       postData: [],
       postList: [],
       scrollTop: "",
-      loginId: "",
+      loginData: Object,
     };
   },
   components: { postItem },
   mounted() {
-    if ("login-id" in window.localStorage) {
-      this.loginId = window.localStorage.getItem("login-id");
-    }
-    // DB에서 데이터 받아오기
-    axios
-      .post("/algorithmLoad", {
-        recommendPoint: 10,
-      })
-      .then((response) => {
-        // 화살표 함수를 사용하면 this.를 사용할 수 있다.
-        this.postData = response.data;
-        this.dataLoad(10);
-      })
-      .catch(function (error) {
-        console.log(error);
+    if ("login-data" in window.localStorage) {
+      this.loginData = JSON.parse(window.localStorage.getItem("login-data"));
+      axios.get("/loadLoginData/" + this.loginData.user_id).then((res) => {
+        const loginData = JSON.stringify(res.data);
+        window.localStorage.setItem("login-data", loginData);
+        this.loginData = JSON.parse(window.localStorage.getItem("login-data"));
       });
+    }
+
+    // DB에서 데이터 받아오기, 최신 10개 + 추천수 10개
+    axios
+      .all([
+        axios.post("/algorithmLoad", {
+          recommendPoint: 10,
+        }),
+        axios.get("/recentMemoLoad"),
+      ])
+      .then(
+        axios.spread((res1, res2) => {
+          // 화살표 함수를 사용하면 this.를 사용할 수 있다.
+          this.algorithmLoadMemo = res1.data;
+          this.recentLoadMemo = res2.data;
+
+          // proxy 상태로는 셔플할 수 없다. 그래서 아래의 방법으로 풀어준다.
+          const algorithmLoadMemoDummy = JSON.parse(
+            JSON.stringify(this.algorithmLoadMemo)
+          );
+          const recentLoadMemoDummy = JSON.parse(
+            JSON.stringify(this.recentLoadMemo)
+          );
+          // concat 메소드로 합친 후 shuffle한다.
+          const shuffleDataDummy =
+            algorithmLoadMemoDummy.concat(recentLoadMemoDummy);
+          const shuffleData = shuffleDataDummy.sort(() => Math.random() - 0.5);
+          console.log(shuffleData);
+          this.postData = shuffleData;
+          this.dataLoad(10); // 최신것들로 10개 끊기
+        })
+      )
+      .catch(() => {});
 
     window.scrollTo(0, 0);
     document.addEventListener("scroll", this.handleScroll);
@@ -55,9 +81,9 @@ export default {
     dataLoad(arrLength) {
       // DB에서 받은 데이터를 최신순으로 10개까지 정렬
       if (this.postData.length >= arrLength) {
-        this.postList = [...this.postData].slice(-arrLength).reverse();
+        this.postList = [...this.postData].slice(0, arrLength);
       } else {
-        this.postList = [...this.postData].reverse();
+        this.postList = [...this.postData];
       }
     },
     handleScroll() {

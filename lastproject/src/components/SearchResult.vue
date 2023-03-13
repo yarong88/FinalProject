@@ -41,7 +41,7 @@
             </div>
             <div>{{ searchResultModalData.writingTime }}</div>
             <span>{{ searchResultModalData.ratingScore }}점</span>
-            <span>추천 : {{ searchResultModalData.recommendPoint }}</span>
+            <span>추천 : {{ searchResultModalData.likeIdList.length }}</span>
             <button @click="searchResultModalOff">모달창 닫기</button>
           </div>
         </div>
