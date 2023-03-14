@@ -58,6 +58,7 @@ app.post("/SignUp", (req, res) => {
   // });
 });
 
+// id 중복검사
 app.get("/SignIn/SignUp/idc/:user_id", (req, res) => {
   console.log(req.params);
   const user_id = req.params.user_id;
@@ -78,6 +79,7 @@ app.get("/SignIn/SignUp/idc/:user_id", (req, res) => {
   };
   id_find();
 });
+// 닉네임 중복검사
 app.get("/SignIn/SignUp/nickc/:user_nickname", (req, res) => {
   const user_nickname = req.params.user_nickname;
   console.log(user_nickname);
@@ -94,6 +96,7 @@ app.get("/SignIn/SignUp/nickc/:user_nickname", (req, res) => {
   };
   nick_find();
 });
+// 이메일 중복검사
 app.get("/SignIn/SignUp/emailc/:user_email", (req, res) => {
   const user_email = req.params.user_email;
   console.log(user_email);
@@ -111,6 +114,7 @@ app.get("/SignIn/SignUp/emailc/:user_email", (req, res) => {
   email_find();
 });
 
+// 로그인
 app.post("/SignIn", (req, res) => {
   const user_id = req.body.user_id;
   const user_pwd = req.body.user_pwd;
@@ -167,6 +171,7 @@ app.post("/memoSave", (req, res) => {
     recommendPoint: req.body.recommendPoint,
     likeIdList: req.body.likeIdList,
     commentList: req.body.commentList,
+    agreeToShare: req.body.agreeToShare,
   };
   (async () => {
     const new_data = new MemoData(_data);
@@ -192,6 +197,7 @@ app.post("/memoUpdate", (req, res) => {
           contentImage: req.body.contentImage,
           writingTime: req.body.writingTime,
           ratingScore: req.body.ratingScore,
+          agreeToShare: req.body.agreeToShare,
         },
       },
       { upsert: true }
@@ -217,10 +223,16 @@ app.post("/memoLoad", (req, res) => {
 // db에서 추천수로 특정 메모 데이터 불러오기
 app.post("/algorithmLoad", (req, res) => {
   const data = req.body.recommendPoint;
+  const loginId = req.body.loginId;
   // 최신 데이터 불러오기
   (async () => {
     const memo = await MemoData.find({
-      recommendPoint: { $gte: data },
+      $nor: [{ userId: loginId }],
+      $and: [
+        {
+          recommendPoint: { $gte: data },
+        },
+      ],
     })
       .sort({ _id: -1 })
       .limit(10)
@@ -232,10 +244,17 @@ app.post("/algorithmLoad", (req, res) => {
 });
 
 // db에서 최신 메모 데이터 불러오기
-app.get("/recentMemoLoad", (req, res) => {
+app.post("/recentMemoLoad", (req, res) => {
+  console.log("b");
+  const loginId = req.body.loginId;
   // 최신 데이터 불러오기
   (async () => {
-    const memo = await MemoData.find({}).sort({ _id: -1 }).limit(10).lean();
+    const memo = await MemoData.find({
+      $nor: [{ userId: loginId }],
+    })
+      .sort({ _id: -1 })
+      .limit(10)
+      .lean();
     return memo;
   })().then((v) => {
     res.send(v);

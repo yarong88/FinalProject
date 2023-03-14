@@ -26,7 +26,7 @@
           >
             중복검사
           </button>
-          <div class="valid-text" v-if="!idValidFlag">
+          <div ref="valid_text" class="valid-text tooltip-bottom">
             유효하지 않은 아이디 입니다. <br />
             영문과 숫자만 사용할 수 있습니다.
           </div>
@@ -162,10 +162,10 @@ export default {
     idValid() {
       if (/^[A-Za-z0-9]+$/.test(this.user.id)) {
         // 영문/숫자
-        this.idValidFlag = true;
+        console.log(this.$refs.valid_text);
+        this.$refs.valid_text.style.visibility = "hidden";
       } else {
-        this.idValidFlag = false;
-        // this.$refs.idvalid_text.disabled = false;
+        this.$refs.valid_text.style.visibility = "visible";
       }
     },
     pwdValid() {
@@ -293,11 +293,44 @@ export default {
   top: 10%;
   left: 40%;
 }
-.input-group {
-  display: inline;
-}
 .info-input {
   margin-top: 30px;
+}
+.input-group {
+  position: relative;
+  display: inline;
+}
+.input-group .valid-text {
+  visibility: hidden; /* 이벤트가 없으면 툴팁 영역을 숨김 */
+  width: 120px; /* 툴팁 영역의 넓이를 설정 */
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  color: red;
+  font-size: small;
+
+  position: absolute; /* 절대 위치를 사용 */
+  z-index: 1;
+}
+.input-group .valid-text::after {
+  content: " "; /* 정사각형 영역 사용 */
+  position: absolute; /* 절대 위치 사용 */
+  border-style: solid;
+  border-width: 5px; /* 테두리 넓이를 5px 로 설정 */
+}
+.input-group .tooltip-bottom {
+  width: 400px;
+  top: 35px;
+  left: 50px;
+  margin-left: -60px;
+}
+.input-group .tooltip-bottom::after {
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-color: transparent transparent black transparent;
 }
 .sign-up-input {
   display: inline;
@@ -336,10 +369,6 @@ export default {
 }
 [aria-disabled="true"] {
   opacity: 0.5;
-}
-.valid-text {
-  color: red;
-  font-size: small;
 }
 @media screen and (max-width: 500px) {
   .sign-up-container {

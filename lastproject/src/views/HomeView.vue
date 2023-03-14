@@ -49,12 +49,13 @@
           <!-- 캔버스 툴 시작 -->
           <div class="button-container">
             <p class="tool-title">Tools :</p>
+            <!-- 상단 시작 -->
             <div class="mobile-button-container">
-              <!-- 선 버튼 시작 -->
+              <!-- 선 되돌리기 등 버튼 시작 -->
               <div class="stroke-button-container">
                 <!-- 취소 버튼 -->
                 <button
-                  class="stroke-do-button"
+                  class="stroke-do-button tooptip-container"
                   type="button"
                   @click="clickRedraw"
                   @click.prevent="$refs.VueCanvasDrawing.undo()"
@@ -75,10 +76,11 @@
                       d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"
                     />
                   </svg>
+                  <span class="tooltiptext tooltip-top">되돌리기</span>
                 </button>
                 <!-- 취소취소 버튼 -->
                 <button
-                  class="stroke-do-button"
+                  class="stroke-do-button tooptip-container"
                   type="button"
                   @click="clickRedraw"
                   @click.prevent="$refs.VueCanvasDrawing.redo()"
@@ -99,10 +101,11 @@
                       d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"
                     />
                   </svg>
+                  <span class="tooltiptext tooltip-top">돌아가기</span>
                 </button>
                 <!-- 리셋 버튼 -->
                 <button
-                  class="stroke-do-button"
+                  class="stroke-do-button tooptip-container"
                   type="button"
                   @click.prevent="$refs.VueCanvasDrawing.reset()"
                   @click="allClear"
@@ -123,12 +126,15 @@
                       d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
                     />
                   </svg>
+                  <span class="tooltiptext tooltip-top">리셋하기</span>
                 </button>
               </div>
-              <!-- 선 or 지우개 -->
+              <!-- 선 되돌리기 등 버튼 끝 -->
+              <!-- 선 or 지우개 등 버튼 시작-->
               <div class="stroke-style-button-container">
+                <!-- 선 or 지우개 -->
                 <button
-                  class="stroke-change-button"
+                  class="stroke-change-button tooptip-container"
                   type="button"
                   @click.prevent="eraser = !eraser"
                 >
@@ -160,91 +166,112 @@
                       />
                     </svg>
                   </span>
+                  <span class="tooltiptext tooltip-top">선 or 지우개</span>
                 </button>
-                <select class="storke-select" v-model="line">
-                  <option v-for="n in 25" :key="'option-' + n" :value="n">
-                    {{ n }}
-                  </option>
-                </select>
-                <input class="color-select" type="color" v-model="color" />
-                <select class="storke-select" v-model="strokeType">
-                  <option value="dash">그리기</option>
-                  <option value="line">직선</option>
-                  <option value="circle">원</option>
-                  <option value="square">사각형</option>
-                  <option value="triangle">삼각형</option>
-                </select>
-                <button
-                  class="stroke-change-button"
-                  type="button"
-                  @click.prevent="fillShape = !fillShape"
-                >
-                  <span v-if="fillShape">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="stroke-button-icon"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M8 16a6 6 0 0 0 6-6c0-1.655-1.122-2.904-2.432-4.362C10.254 4.176 8.75 2.503 8 0c0 0-6 5.686-6 10a6 6 0 0 0 6 6ZM6.646 4.646l.708.708c-.29.29-1.128 1.311-1.907 2.87l-.894-.448c.82-1.641 1.717-2.753 2.093-3.13Z"
-                      />
-                    </svg>
-                  </span>
-                  <span v-else>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="stroke-button-icon"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M7.21.8C7.69.295 8 0 8 0c.109.363.234.708.371 1.038.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8zm.413 1.021A31.25 31.25 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87l-.894-.448z"
-                      />
-                    </svg>
-                  </span>
-                </button>
+                <!-- 선 굵기 -->
+                <span class="storke-select-container tooptip-container">
+                  <select class="storke-select" v-model="line">
+                    <option v-for="n in 25" :key="'option-' + n" :value="n">
+                      {{ n }}
+                    </option>
+                  </select>
+                  <span class="tooltiptext tooltip-top">선 굵기</span>
+                </span>
+                <!-- 선 색상 -->
+                <span class="color-select-container tooptip-container">
+                  <input class="color-select" type="color" v-model="color" />
+                  <span class="tooltiptext tooltip-top">선 색상</span>
+                </span>
+                <!-- 도형 그리기 -->
+                <span class="storke-select-container tooptip-container">
+                  <select class="storke-select" v-model="strokeType">
+                    <option value="dash">그리기</option>
+                    <option value="line">직선</option>
+                    <option value="circle">원</option>
+                    <option value="square">사각형</option>
+                    <option value="triangle">삼각형</option>
+                  </select>
+                  <span class="tooltiptext tooltip-top">도형 그리기</span>
+                </span>
+                <!-- 색 채우기 -->
+                <span class="color-fill-container tooptip-container">
+                  <button
+                    class="stroke-change-button"
+                    type="button"
+                    @click.prevent="fillShape = !fillShape"
+                  >
+                    <span v-if="fillShape">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="stroke-button-icon"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 16a6 6 0 0 0 6-6c0-1.655-1.122-2.904-2.432-4.362C10.254 4.176 8.75 2.503 8 0c0 0-6 5.686-6 10a6 6 0 0 0 6 6ZM6.646 4.646l.708.708c-.29.29-1.128 1.311-1.907 2.87l-.894-.448c.82-1.641 1.717-2.753 2.093-3.13Z"
+                        />
+                      </svg>
+                    </span>
+                    <span v-else>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="stroke-button-icon"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M7.21.8C7.69.295 8 0 8 0c.109.363.234.708.371 1.038.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8zm.413 1.021A31.25 31.25 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87l-.894-.448z"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <span class="tooltiptext tooltip-top">색 채우기</span>
+                </span>
               </div>
-              <!-- 선 버튼 끝 -->
+              <!-- 선 or 지우개 등 버튼 끝 -->
             </div>
+            <!-- 상단 끝 -->
+            <!-- 중단 시작 -->
             <div class="mobile-button-container">
               <div class="background-container">
-                <div>
-                  <p
-                    class="backgroundcolor-text"
-                    style="margin-bottom: 0px; margin-top: 0px"
-                  >
-                    배경색
-                  </p>
-                  <input type="color" v-model="backgroundColor" />
+                <!-- 배경색 -->
+                <div class="backgroundcolor-container tooptip-container">
+                  <input
+                    class="color-select"
+                    type="color"
+                    v-model="backgroundColor"
+                  />
+                  <span class="tooltiptext tooltip-top">배경색상</span>
                 </div>
-                <div>
-                  <p
-                    class="backgroundimg-text"
-                    style="margin-bottom: 0px; margin-top: 0px"
-                  >
-                    이미지 업로드:
-                  </p>
+                <!-- 배경이미지 -->
+                <div class="backgroundimage-container tooptip-container">
                   <input
                     class="setImage-button"
                     type="file"
                     @change="setImage($event)"
                   />
+                  <span class="tooltiptext tooltip-top">이미지 업로드</span>
                 </div>
               </div>
               <!-- 별점 및 이미지 저장 -->
-              <div class="star-tool">
-                <form name="myform" id="myform" method="post" action="./save">
-                  <fieldset>
+              <div class="star-tool-container">
+                <form
+                  name="myform"
+                  id="myform"
+                  class="tooptip-container"
+                  method="post"
+                  action="./save"
+                >
+                  <fieldset class="star-tool">
                     <input
                       type="radio"
                       name="rating"
@@ -276,41 +303,62 @@
                       id="rate5"
                     /><label for="rate5">⭐</label>
                   </fieldset>
+                  <span class="tooltiptext tooltip-top">별점 등록</span>
                 </form>
                 <!-- 이미지 저장 -->
-                <button class="save-tool" @click="imgSave">
+                <button class="save-tool tooptip-container" @click="imgSave">
                   <img class="save-img" src="../assets/save.png" alt="" />save
+                  <span class="tooltiptext tooltip-top">저장하기</span>
                 </button>
               </div>
               <!-- 별점 끝 -->
             </div>
+            <!-- 중단 끝 -->
+            <!-- 하단 시작 -->
             <div class="input-text-container">
-              <p class="input-text-text">
-                현재 글쓰기 시작점은 {{ cx }},{{ cy }}입니다.
-                <br />
-                x-axis:
-                <strong>{{ x }}</strong
-                >, y-axis: <strong>{{ y }}</strong>
-              </p>
+              <!-- 글자 위치 -->
+              <div>
+                <p class="input-text-text">
+                  현재 글쓰기 시작점은 {{ cx }},{{ cy }}입니다.
+                  <br />
+                  x-axis:
+                  <strong>{{ x }}</strong
+                  >, y-axis: <strong>{{ y }}</strong>
+                </p>
+              </div>
+              <!-- 글자 꾸미기 -->
               <div class="input-text-inner-container">
-                <select v-model="fontSize">
-                  <option v-for="n in 25" :key="'option-' + n" :value="n">
-                    {{ n }}
-                  </option>
-                </select>
-                <input type="color" v-model="fontColor" />
+                <span class="font-size-container tooptip-container">
+                  <select class="font-size" v-model="fontSize">
+                    <option v-for="n in 25" :key="'option-' + n" :value="n">
+                      {{ n }}
+                    </option>
+                  </select>
+                  <span class="tooltiptext tooltip-top">글자 크기</span>
+                </span>
+                <span class="font-color-container tooptip-container">
+                  <input
+                    class="color-select"
+                    type="color"
+                    v-model="fontColor"
+                  />
+                  <span class="tooltiptext tooltip-top">글자 색상</span>
+                </span>
                 <!-- <button @click="deleteText">뒤로가기</button> -->
               </div>
+              <!-- 글자 입력 -->
               <input
                 class="input-text"
                 ref="inputText"
                 type="text"
                 v-model="text"
+                @keyup="showText()"
                 @keyup.enter="fillmessage()"
                 autofocus
                 placeholder="Enter를 입력하면 출력됩니다."
               />
             </div>
+            <!-- 하단 끝 -->
           </div>
           <!-- 캔버스 툴 끝 -->
         </div>
@@ -430,6 +478,7 @@ export default {
       loadedImage: [],
       certification: true,
       loginId: "",
+      agreeToShare: 0,
     };
   },
   mounted() {
@@ -537,6 +586,13 @@ export default {
         this.image = canvas.toDataURL();
       };
     },
+    showText() {
+      const canvas = document.getElementById("VueDrawingCanvas");
+      const context = canvas.getContext("2d");
+      context.font = this.fontSize + "pt BM";
+      context.fillStyle = this.fontColor;
+      context.fillText(this.text, this.cx, this.cy);
+    },
     // Canvas에 글쓰기
     fillmessage() {
       this.textBox.push(this.text);
@@ -640,6 +696,12 @@ export default {
         if (window.confirm("저장하시겠습니까?")) {
           this.mergeText(); // 텍스트 합치기
           if (this.idModify) {
+            if (this.agreeToShare === 0) {
+              // 공유 동의 받기
+              if (window.confirm("공유하시겠습니까?")) {
+                this.agreeToShare = 1;
+              }
+            }
             // update할 데이터 폼
             const data = {
               _id: this.idModify, // 업데이트 하기 위한 키
@@ -649,6 +711,7 @@ export default {
               contentImage: this.image, // 이미지
               writingTime: new Date(), // 작성시각
               ratingScore: 3, // 별점
+              agreeToShare: this.agreeToShare,
             };
             // axios post로 저장할 데이터 서버로 전송
             axios
@@ -660,6 +723,10 @@ export default {
                 console.log(error);
               });
           } else {
+            // 공유 동의 받기
+            if (window.confirm("공유하시겠습니까?")) {
+              this.agreeToShare = 1;
+            }
             // 저장할 데이터 폼
             const data = {
               userId: this.loginId, // 아이디
@@ -671,6 +738,7 @@ export default {
               recommendPoint: 0,
               likeIdList: [],
               commentList: [],
+              agreeToShare: this.agreeToShare,
             };
             // axios post로 서버 속 데이터 업데이트
             axios
@@ -709,6 +777,7 @@ export default {
     async imgModify(data) {
       this.mainStatus = !this.mainStatus;
       this.idModify = data._id;
+      this.agreeToShare = data.agreeToShare;
       this.backgroundImage = data.contentImage;
       await this.$refs.VueCanvasDrawing.redraw();
     },
@@ -747,9 +816,6 @@ body {
 }
 .button-container > * {
   margin: 15px;
-}
-.background-container {
-  display: flex;
 }
 .input-text {
   width: 300px;
@@ -810,13 +876,55 @@ body {
 .detail-image {
   box-shadow: 5px 5px 5px rgb(192, 192, 192);
 }
+.stroke-button-container {
+  display: inline-flex;
+}
 .stroke-do-button {
+  display: block;
   width: 50px;
   margin: 1px;
   background-color: rgb(118, 235, 231);
   color: #000000;
   border: #7e7e7e 1px solid;
   border-radius: 10px;
+}
+.tooptip-container {
+  position: relative;
+  cursor: pointer;
+}
+.tooptip-container:hover .tooltiptext {
+  visibility: visible; /* hover 이벤트 발생시 영역을 보여줌 */
+}
+.tooltiptext {
+  visibility: hidden; /* 이벤트가 없으면 툴팁 영역을 숨김 */
+  width: 120px; /* 툴팁 영역의 넓이를 설정 */
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute; /* 절대 위치를 사용 */
+  z-index: 1;
+  bottom: 25px;
+  left: 0px;
+}
+.tooptip-container .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  border-style: solid;
+  border-width: 5px;
+}
+.tooptip-container .tooltip-top {
+  width: 120px;
+  bottom: 120%;
+  left: 50%;
+  margin-left: -60px;
+}
+.tooptip-container .tooltip-top::after {
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-color: black transparent transparent transparent;
 }
 .stroke-button-icon {
   margin-top: 3px;
@@ -833,15 +941,87 @@ body {
   border: #7e7e7e 1px solid;
   border-radius: 10px;
 }
+.storke-select-container {
+  margin: 1px;
+}
 .storke-select {
   height: 26px;
-  margin: 1px;
+  cursor: pointer;
 }
 .color-select {
   width: 50px;
   background-color: rgb(231, 231, 231);
   border: #7e7e7e 1px solid;
   border-radius: 10px;
+  cursor: pointer;
+}
+.background-container {
+  display: flex;
+}
+.color-select {
+  cursor: pointer;
+}
+.setImage-button {
+  cursor: pointer;
+}
+.star-tool-container {
+  display: inline-flex;
+  padding: 8px;
+  height: 30px;
+  /* position: absolute; */
+  /* right: 2.5em; */
+  /* background-color: #777777; */
+}
+.star-tool {
+  cursor: pointer;
+}
+#myform .star-tool {
+  display: inline-block; /* 하위 별점 이미지들이 있는 영역만 자리를 차지함.*/
+  direction: rtl; /* 이모지 순서 반전 */
+  border: 0; /* 필드셋 테두리 제거 */
+  padding: 0;
+  margin: 5px;
+  height: 26px;
+  background-color: #7e7e7e;
+}
+#myform input[type="radio"] {
+  display: none; /* 라디오박스 감춤 */
+}
+#myform label {
+  font-size: 0.9em; /* 이모지 크기 */
+  color: transparent; /* 기존 이모지 컬러 제거 */
+  text-shadow: 0 0 0 #cccccc; /* 새 이모지 색상 부여 */
+}
+#myform label:hover {
+  text-shadow: 0 0 0 black; /* 마우스 호버 */
+  cursor: pointer;
+}
+#myform label:hover ~ label {
+  text-shadow: 0 0 0 black; /* 마우스 호버 뒤에오는 이모지들 */
+}
+#myform input[type="radio"]:checked ~ label {
+  text-shadow: 0 0 0 black; /* 마우스 클릭 체크 */
+}
+.save-tool {
+  width: 100px;
+  /* padding: 10px; */
+  height: 30px;
+  /* position: absolute;
+  right: 0; */
+}
+.save-img {
+  width: 20px;
+  height: 20px;
+  background-color: #cccccc;
+  border-radius: 8px;
+}
+.input-text-inner-container {
+  display: inline-flex;
+  margin: 10px;
+}
+.font-size {
+  height: 26px;
+  cursor: pointer;
 }
 .detail-image {
   width: 600px;
@@ -915,57 +1095,6 @@ body {
   position: absolute;
   right: 5em;
 }
-.star-tool {
-  display: flex;
-  padding: 8px;
-  height: 30px;
-  width: 150px;
-  text-align: center;
-  /* position: absolute; */
-  /* right: 2.5em; */
-  /* background-color: #777777; */
-}
-#myform fieldset {
-  display: inline-block; /* 하위 별점 이미지들이 있는 영역만 자리를 차지함.*/
-  direction: rtl; /* 이모지 순서 반전 */
-  border: 0; /* 필드셋 테두리 제거 */
-  padding: 0;
-  margin: 5px;
-  height: 26px;
-  background-color: #7e7e7e;
-}
-#myform input[type="radio"] {
-  display: none; /* 라디오박스 감춤 */
-}
-#myform label {
-  font-size: 0.9em; /* 이모지 크기 */
-  color: transparent; /* 기존 이모지 컬러 제거 */
-  text-shadow: 0 0 0 #cccccc; /* 새 이모지 색상 부여 */
-}
-#myform label:hover {
-  text-shadow: 0 0 0 black; /* 마우스 호버 */
-  cursor: pointer;
-}
-#myform label:hover ~ label {
-  text-shadow: 0 0 0 black; /* 마우스 호버 뒤에오는 이모지들 */
-}
-#myform input[type="radio"]:checked ~ label {
-  text-shadow: 0 0 0 black; /* 마우스 클릭 체크 */
-}
-.save-tool {
-  width: 100px;
-  /* padding: 10px; */
-  height: 30px;
-  /* position: absolute;
-  right: 0; */
-  cursor: pointer;
-}
-.save-img {
-  width: 20px;
-  height: 20px;
-  background-color: #cccccc;
-  border-radius: 8px;
-}
 @media screen and (max-width: 500px) {
   .wrap-memo {
     width: 360px;
@@ -1017,16 +1146,10 @@ body {
   .stroke-style-button-container {
     display: block;
   }
-  .backgroundcolor-text {
-    display: none;
-  }
-  .backgroundimg-text {
-    display: none;
-  }
   .setImage-button {
     width: 75px;
   }
-  .star-tool {
+  .star-tool-container {
     padding: 0;
   }
   .input-text-container {

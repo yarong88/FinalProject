@@ -11,6 +11,7 @@ const DataSchema = new Schema({
   recommendPoint: Number,
   likeIdList: Array,
   commentList: Array,
+  agreeToShare: Number,
 });
 
 module.exports = mongoose.model("MemoData", DataSchema, "MemoData");
