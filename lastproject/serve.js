@@ -578,7 +578,7 @@ app.post("/delCommentText", (req, res) => {
   });
 });
 
-// 모달창 닉네임 읽어오기
+// 프로필 정보 가져오기
 app.get('/profiler/:user_id', (req, res) => {
   // const user_id = localStorage.getItem("login-id")
   const user_id = req.params.user_id
