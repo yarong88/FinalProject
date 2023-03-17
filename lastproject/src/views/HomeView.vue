@@ -496,10 +496,6 @@ export default {
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
-    stateChange(event) {
-      var selected = event.target.value;
-      console.log("selected : ", selected);
-    },
     // 페이지 이동시 경고창
     unLoadEvent: function (event) {
       if (this.certification) return;
