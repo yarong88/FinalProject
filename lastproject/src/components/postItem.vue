@@ -2,7 +2,7 @@
   <div class="post-container">
     <div class="post-item">
       <div class="post-top">
-        <span>작성자 닉네임 {{ postData.writingTime }}</span>
+        <span>{{ postData.userNickname }} : {{ postData.writingTime }}</span>
         <i class="bi bi-plus-square"></i>
       </div>
       <hr />
@@ -35,21 +35,11 @@
         <div class="post-content">
           <span class="post-title">타이틀 : {{ postData.contentText[0] }}</span>
           <span> : </span>
-          <div class="post-text">{{ postData.contentText }}</div>
+          <div class="post-text">{{ postData.contentLongText }}</div>
         </div>
       </div>
       <hr />
-      <div class="post-footer">
-        <i class="bi bi-chat-dots"></i>
-        <input
-          class="comment-text"
-          ref="commentText"
-          type="text"
-          v-model="commentText"
-          @keyup.enter="addCommentText()"
-          placeholder="Enter를 입력하면 저장됩니다."
-        />
-      </div>
+      <div class="post-footer"></div>
     </div>
   </div>
   <!-- 모달창 시작 -->
@@ -77,14 +67,25 @@
           <button @click="imgDelete(postData)">삭제하기</button> -->
             <button @click="modalOnOff">모달창 닫기</button>
             <!-- 댓글 -->
-            <div class="comment-box">
-              <div v-for="(comment, i) in postData.commentList" :key="i">
-                <span class="comment-name">{{ comment.user_nickname }} : </span>
-                <span class="comment-text">{{ comment.commentText }}</span>
-                <br />
-                <span class="comment-time">{{ comment.commentTime }}</span>
-                <button @click="delComment(comment)">삭제</button>
-              </div>
+            <div class="comment-text-container" v-if="commentStatus">
+              <i class="bi bi-chat-dots"></i>
+              <input
+                class="comment-text"
+                ref="commentText"
+                type="text"
+                v-model="commentText"
+                @keyup.enter="addCommentText()"
+                placeholder="Enter를 입력하면 저장됩니다."
+              />
+            </div>
+            <div id="comment_box" class="comment-box">
+              <postComment
+                v-for="comment in postData.commentList"
+                v-bind:comment-data="comment"
+                v-bind:post-objectId="postData._id"
+                v-bind:login-nickname="comment.user_nickname"
+                :key="comment"
+              />
             </div>
           </div>
         </div>
@@ -97,12 +98,15 @@
 <script>
 /* eslint-disable */
 import axios from "axios";
+import postComment from "./PostComment.vue";
+
 export default {
   name: "postItem",
   props: {
     postData: Object,
     loginData: Object,
   },
+  components: { postComment },
   mounted() {
     if (this.postData.likeIdList) {
       for (let i = 0; i < this.postData.likeIdList.length; i++) {
@@ -118,73 +122,95 @@ export default {
         }
       }
     }
-    if (this.loginData.bookmark_list) {
-      for (let i = 0; i < this.loginData.bookmark_list.length; i++) {
-        if (this.postData._id === this.loginData.bookmark_list[i]) {
+    if (this.postData.bookmarkIdList) {
+      for (let i = 0; i < this.postData.bookmarkIdList.length; i++) {
+        if (this.loginData.user_id === this.postData.bookmarkIdList[i]) {
           this.$refs.bookmarks_button.className = "bi bi-bookmarks-fill";
         }
       }
+    }
+    if (this.loginData.user_id) {
+      this.commentStatus = true;
     }
   },
   data() {
     return {
       modalStatus: false,
       commentText: "",
+      commentStatus: false,
     };
   },
   methods: {
     // 좋아요 버튼
     likeButton(event) {
-      const data = {
-        _id: this.postData._id, // 게시물 id
-        userId: this.loginData.user_id, // 좋아요 버튼 누르는 사람의 id
-      };
-      if (event.target.style.color == "red") {
-        event.target.style.color = "black"; // 빨 -> 검
-        axios.post("/delToLikeList", data).then((res) => {
-          console.log(res.data);
-        });
+      if (this.loginData.user_id) {
+        const data = {
+          _id: this.postData._id, // 게시물 id
+          userId: this.loginData.user_id, // 좋아요 버튼 누르는 사람의 id
+        };
+        if (event.target.style.color == "red") {
+          event.target.style.color = "black"; // 빨 -> 검
+          axios.post("/delToLikeList", data).then((res) => {
+            console.log(res.data);
+          });
+        } else {
+          event.target.style.color = "red"; // 검 -> 빨
+          axios.post("/addToLikeList", data).then((res) => {
+            console.log(res.data);
+          });
+        }
       } else {
-        event.target.style.color = "red"; // 검 -> 빨
-        axios.post("/addToLikeList", data).then((res) => {
-          console.log(res.data);
-        });
+        if (window.confirm("로그인 상태가 아닙니다. 로그인 하시겠습니까?")) {
+          this.$router.push("/LogIn");
+        }
       }
     },
     // 친구추가 버튼
     addToFriend(event) {
-      const data = {
-        memoId: this.postData.userId, // 게시물 userId
-        hostId: this.loginData.user_id, // 친구추가 버튼 누르는 사람의 id
-      };
-      if (event.target.className == "bi bi-person-plus") {
-        event.target.className = "bi bi-person-plus-fill";
-        axios.post("/addToFriendsList", data).then((res) => {
-          console.log(res.data);
-        });
+      if (this.loginData.user_id) {
+        const data = {
+          memoId: this.postData.userId, // 게시물 userId
+          hostId: this.loginData.user_id, // 친구추가 버튼 누르는 사람의 id
+        };
+        if (event.target.className == "bi bi-person-plus") {
+          event.target.className = "bi bi-person-plus-fill";
+          axios.post("/addToFriendsList", data).then((res) => {
+            console.log(res.data);
+          });
+        } else {
+          event.target.className = "bi bi-person-plus";
+          axios.post("/delToFriendsList", data).then((res) => {
+            console.log(res.data);
+          });
+        }
       } else {
-        event.target.className = "bi bi-person-plus";
-        axios.post("/delToFriendsList", data).then((res) => {
-          console.log(res.data);
-        });
+        if (window.confirm("로그인 상태가 아닙니다. 로그인 하시겠습니까?")) {
+          this.$router.push("/LogIn");
+        }
       }
     },
     // 북마크 버튼
     addBookmark(event) {
-      const data = {
-        memoId: this.postData._id, // 게시물 _id
-        hostId: this.loginData.user_id, // 친구추가 버튼 누르는 사람의 id
-      };
-      if (event.target.className == "bi bi-bookmarks") {
-        event.target.className = "bi bi-bookmarks-fill";
-        axios.post("/addToBookmarkList", data).then((res) => {
-          console.log(res.data);
-        });
+      if (this.loginData.user_id) {
+        const data = {
+          memoId: this.postData._id, // 게시물 _id
+          hostId: this.loginData.user_id, // 친구추가 버튼 누르는 사람의 id
+        };
+        if (event.target.className == "bi bi-bookmarks") {
+          event.target.className = "bi bi-bookmarks-fill";
+          axios.post("/addToBookmarkList", data).then((res) => {
+            console.log(res.data);
+          });
+        } else {
+          event.target.className = "bi bi-bookmarks";
+          axios.post("/delToBookmarkList", data).then((res) => {
+            console.log(res.data);
+          });
+        }
       } else {
-        event.target.className = "bi bi-bookmarks";
-        axios.post("/delToBookmarkList", data).then((res) => {
-          console.log(res.data);
-        });
+        if (window.confirm("로그인 상태가 아닙니다. 로그인 하시겠습니까?")) {
+          this.$router.push("/LogIn");
+        }
       }
     },
     // 모달창
@@ -206,22 +232,8 @@ export default {
         commentTime: new Date(),
       };
       axios.post("/addCommentText", data).then((res) => {
-        console.log(res.data);
-        // 새로고침
-        window.location.reload();
-      });
-    },
-    delComment(comment) {
-      const data = {
-        _id: this.postData._id,
-        user_nickname: comment.user_nickname,
-        commentText: comment.commentText,
-        commentTime: comment.commentTime,
-      };
-      axios.post("/delCommentText", data).then((res) => {
-        console.log(res.data);
-        // 새로고침
-        window.location.reload();
+        this.postData.commentList = res.data[0].commentList;
+        this.commentText = "";
       });
     },
   },
@@ -318,6 +330,10 @@ export default {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+}
+.comment-box {
+  height: 185px;
+  overflow: auto;
 }
 @media screen and (max-width: 500px) {
   .post-container {

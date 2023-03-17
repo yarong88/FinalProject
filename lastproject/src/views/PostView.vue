@@ -1,10 +1,10 @@
 <template>
   <div>
     <postItem
-      v-for="(post, i) in postList"
+      v-for="post in postList"
       v-bind:post-data="post"
       v-bind:login-data="loginData"
-      v-bind:key="i"
+      :key="post"
     />
   </div>
 </template>
@@ -36,8 +36,9 @@ export default {
         this.loginData = JSON.parse(window.localStorage.getItem("login-data"));
         this.dataLoad(loginData.user_id);
       });
+    } else {
+      this.dataLoad("");
     }
-    this.dataLoad("");
 
     window.scrollTo(0, 0);
     document.addEventListener("scroll", this.handleScroll);
@@ -79,13 +80,14 @@ export default {
             );
             console.log(shuffleData);
             // 중복 제거
+            const matchingArr = [];
             for (let i = 0; i < shuffleData.length; i++) {
-              shuffleData[i]._id;
-
-              this.postData = shuffleData.reduce(
-                (ac, v) => (ac.includes(v) ? ac : [...ac, v]),
-                []
-              );
+              if (!matchingArr.includes(shuffleData[i]._id)) {
+                if (!(shuffleData[i].userId === this.loginData.user_id)) {
+                  matchingArr.push(shuffleData[i]._id);
+                  this.postData.push(shuffleData[i]);
+                }
+              }
             }
             this.organizeData(10); // 최신것들로 10개 끊기
           })

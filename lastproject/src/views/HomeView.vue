@@ -2,13 +2,25 @@
   <div class="wrap-memo">
     <div class="memo-title">
       <!-- 사이드 바 출력 버튼 -->
-      <button
+      <span
         class="sidebar-onoff"
         v-if="sidebarButtonStatus"
         @click="sidebarOnOff"
       >
-        사이드 바
-      </button>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          fill="currentColor"
+          class="sidebar-button-icon bi bi-arrow-down-right-square-fill"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M14 16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12zM5.904 5.197 10 9.293V6.525a.5.5 0 0 1 1 0V10.5a.5.5 0 0 1-.5.5H6.525a.5.5 0 0 1 0-1h2.768L5.197 5.904a.5.5 0 0 1 .707-.707z"
+          />
+        </svg>
+        <span class="sidebar-button-text"> 열려랏! </span>
+      </span>
     </div>
     <div class="memo-container">
       <!-- 메모장 시작 -->
@@ -276,30 +288,35 @@
                       type="radio"
                       name="rating"
                       value="5"
+                      v-model="rate"
                       id="rate1"
                     /><label for="rate1">⭐</label>
                     <input
                       type="radio"
                       name="rating"
                       value="4"
+                      v-model="rate"
                       id="rate2"
                     /><label for="rate2">⭐</label>
                     <input
                       type="radio"
                       name="rating"
                       value="3"
+                      v-model="rate"
                       id="rate3"
                     /><label for="rate3">⭐</label>
                     <input
                       type="radio"
                       name="rating"
                       value="2"
+                      v-model="rate"
                       id="rate4"
                     /><label for="rate4">⭐</label>
                     <input
                       type="radio"
                       name="rating"
                       value="1"
+                      v-model="rate"
                       id="rate5"
                     /><label for="rate5">⭐</label>
                   </fieldset>
@@ -352,7 +369,6 @@
                 ref="inputText"
                 type="text"
                 v-model="text"
-                @keyup="showText()"
                 @keyup.enter="fillmessage()"
                 autofocus
                 placeholder="Enter를 입력하면 출력됩니다."
@@ -377,13 +393,14 @@
               {{ detailBox.contentText[0] }}
             </div>
             <div>
-              {{ detailBox.contentText }}
+              {{ detailBox.contentLongText }}
             </div>
             <div>{{ detailBox.writingTime }}</div>
             <span>{{ detailBox.ratingScore }}점</span>
             <span>추천 : {{ detailBox.likeIdList.length }}</span>
             <button @click="imgModify(detailBox)">수정하기</button>
             <button @click="imgDelete(detailBox)">삭제하기</button>
+            <button @click="positionChange()">나가기</button>
           </div>
         </div>
       </div>
@@ -431,6 +448,7 @@ export default {
       sidebarStatus: false,
       sidebarButtonStatus: false,
       mobileStatus: false,
+      rate: "",
       initialImage: [
         {
           type: "dash",
@@ -478,6 +496,7 @@ export default {
       loadedImage: [],
       certification: true,
       loginId: "",
+      loginNickname: "",
       agreeToShare: 0,
     };
   },
@@ -493,6 +512,7 @@ export default {
       console.log(logindData);
       // DB에서 데이터 받아오기
       this.loginId = logindData.user_id;
+      this.loginNickname = logindData.user_nickname;
       axios
         .post("/memoLoad", {
           userId: logindData.user_id,
@@ -586,13 +606,13 @@ export default {
         this.image = canvas.toDataURL();
       };
     },
-    showText() {
-      const canvas = document.getElementById("VueDrawingCanvas");
-      const context = canvas.getContext("2d");
-      context.font = this.fontSize + "pt BM";
-      context.fillStyle = this.fontColor;
-      context.fillText(this.text, this.cx, this.cy);
-    },
+    // showText() {
+    //   const canvas = document.getElementById("VueDrawingCanvas");
+    //   const context = canvas.getContext("2d");
+    //   context.font = this.fontSize + "pt BM";
+    //   context.fillStyle = this.fontColor;
+    //   context.fillText(this.text, this.cx, this.cy);
+    // },
     // Canvas에 글쓰기
     fillmessage() {
       this.textBox.push(this.text);
@@ -705,13 +725,12 @@ export default {
             // update할 데이터 폼
             const data = {
               _id: this.idModify, // 업데이트 하기 위한 키
-              userId: this.loginId, // 아이디
               contentText: this.textBox, // 텍스트
               contentLongText: this.finalText, // 합친 텍스트
               contentImage: this.image, // 이미지
               writingTime: new Date(), // 작성시각
-              ratingScore: 3, // 별점
-              agreeToShare: this.agreeToShare,
+              ratingScore: this.rate, // 별점
+              agreeToShare: this.agreeToShare, // 공유 동의
             };
             // axios post로 저장할 데이터 서버로 전송
             axios
@@ -730,15 +749,17 @@ export default {
             // 저장할 데이터 폼
             const data = {
               userId: this.loginId, // 아이디
-              contentText: this.textBox, // 텍스트
+              userNickname: this.loginNickname, // 닉네임
+              contentText: this.textBox, // 텍스트 모음
               contentLongText: this.finalText, // 합친 텍스트
               contentImage: this.image, // 이미지
               writingTime: new Date(), // 작성시각
-              ratingScore: 0, // 별점
-              recommendPoint: 0,
-              likeIdList: [],
-              commentList: [],
-              agreeToShare: this.agreeToShare,
+              ratingScore: this.rate, // 별점
+              recommendPoint: 0, // 추천 수
+              likeIdList: [], // 좋아요한 아이디 모음
+              bookmarkIdList: [], // 북마크한 아이디 모음
+              commentList: [], // 댓글 모음
+              agreeToShare: this.agreeToShare, // 공유 동의
             };
             // axios post로 서버 속 데이터 업데이트
             axios
@@ -777,9 +798,13 @@ export default {
     async imgModify(data) {
       this.mainStatus = !this.mainStatus;
       this.idModify = data._id;
+      this.textBox = data.contentText;
       this.agreeToShare = data.agreeToShare;
       this.backgroundImage = data.contentImage;
-      await this.$refs.VueCanvasDrawing.redraw();
+      // await this.$refs.VueCanvasDrawing.redraw();
+    },
+    positionChange() {
+      this.mainStatus = !this.mainStatus;
     },
     // reset에 기능 추가
     allClear() {
@@ -792,9 +817,10 @@ export default {
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,700&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,700&display=swap"); */
 body {
-  font-family: "Roboto", sans-serif;
+  /* font-family: "Roboto", sans-serif; */
+  /* font-family: "BMYEONSUNG"; */
   background-color: #fafcff;
 }
 .memo-title {
@@ -807,8 +833,23 @@ body {
 }
 .sidebar-onoff {
   position: absolute;
-  left: 80%;
-  bottom: 0px;
+  left: 668px;
+  bottom: 34px;
+}
+.sidebar-onoff:hover .sidebar-button-icon {
+  visibility: hidden;
+}
+.sidebar-button-text {
+  visibility: hidden;
+  position: absolute;
+  cursor: pointer;
+  width: 50px;
+  font-size: 20px;
+  top: 10px;
+  right: -8px;
+}
+.sidebar-onoff:hover .sidebar-button-text {
+  visibility: visible;
 }
 .button-container {
   margin: 15px;
@@ -897,7 +938,7 @@ body {
 }
 .tooltiptext {
   visibility: hidden; /* 이벤트가 없으면 툴팁 영역을 숨김 */
-  width: 120px; /* 툴팁 영역의 넓이를 설정 */
+  /* width: 120px; 툴팁 영역의 넓이를 설정 */
   background-color: black;
   color: #fff;
   text-align: center;
@@ -905,8 +946,11 @@ body {
   padding: 5px 0;
   position: absolute; /* 절대 위치를 사용 */
   z-index: 1;
-  bottom: 25px;
-  left: 0px;
+  /* bottom: 25px;
+  left: 0px; */
+  font-family: "BMYEONSUNG";
+  font-size: 20px;
+  height: 22px;
 }
 .tooptip-container .tooltiptext::after {
   content: " ";

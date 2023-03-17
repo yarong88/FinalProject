@@ -96,6 +96,23 @@ app.get("/SignIn/SignUp/nickc/:user_nickname", (req, res) => {
   };
   nick_find();
 });
+//마이페이지 닉네임 체크
+app.get("/nickc/:user_nickname", (req, res) => {
+  const user_nickname = req.params.user_nickname;
+  console.log(user_nickname);
+  const nick_find = async () => {
+    const t = await UserData.find({ user_nickname }, { _id: 0, __v: 0 }).lean();
+    if (t.length === 0) {
+      console.log("닉네임 사용가능");
+      res.send("가능");
+    } else {
+      console.log("닉네임 사용불가 - 중복");
+      res.send(user_nickname);
+    }
+    // console.log(t)
+  };
+  nick_find();
+});
 // 이메일 중복검사
 app.get("/SignIn/SignUp/emailc/:user_email", (req, res) => {
   const user_email = req.params.user_email;
@@ -108,6 +125,23 @@ app.get("/SignIn/SignUp/emailc/:user_email", (req, res) => {
     } else {
       console.log("이메일 사용불가 - 중복");
       res.send("중복");
+    }
+    // console.log(t)
+  };
+  email_find();
+});
+// 마이페이지 이메일 중복검사
+app.get("/emailc/:user_email", (req, res) => {
+  const user_email = req.params.user_email;
+  console.log(user_email);
+  const email_find = async () => {
+    const t = await UserData.find({ user_email }, { _id: 0, __v: 0 }).lean();
+    if (t.length === 0) {
+      console.log("이메일 사용가능");
+      res.send("가능");
+    } else {
+      console.log("이메일 사용불가 - 중복");
+      res.send(user_email);
     }
     // console.log(t)
   };
@@ -148,9 +182,10 @@ app.get("/loadLoginData/:user_id", (req, res) => {
       user_nickname: v[0].user_nickname,
       user_email: v[0].user_email,
 
-      birth: v[0].birth,
-      gender: v[0].gender,
-      hobby: v[0].hobby,
+      user_profile_img: v[0].user_profile_img,
+      user_birth: v[0].user_birth,
+      user_gender: v[0].user_gender,
+      user_hobby: v[0].user_hobby,
 
       friends_list: v[0].friends_list,
       bookmark_list: v[0].bookmark_list,
@@ -159,10 +194,58 @@ app.get("/loadLoginData/:user_id", (req, res) => {
   });
 });
 
+// 프로필 편집
+app.post("/editpro", (req, res) => {
+  const user_id = req.body.user_id;
+  const user_nickname = req.body.user_nickname;
+  const user_email = req.body.user_email;
+  const user_birth = req.body.user_birth;
+  const user_gender = req.body.user_gender;
+  const user_hobby = req.body.user_hobby;
+  const user_profile_img = req.body.user_profile_img;
+  const modify_user = async () => {
+    const t = await UserData.updateOne(
+      {
+        user_id: user_id,
+      },
+      {
+        $set: {
+          user_nickname: user_nickname,
+          user_email: user_email,
+          user_birth: user_birth,
+          user_gender: user_gender,
+          user_hobby: user_hobby,
+          user_profile_img: user_profile_img,
+        },
+      },
+      { upsert: true }
+    );
+    console.log(t);
+    res.send("수정완료");
+  };
+  modify_user();
+});
+
+// 프로필 불러오기
+app.get("/profiler/:user_id", (req, res) => {
+  // const user_id = localStorage.getItem("login-id")
+  const user_id = req.params.user_id;
+  console.log(user_id);
+  const profileread = async () => {
+    const t = await UserData.findOne({ user_id }, { _id: 0, __v: 0 }).lean();
+    return t;
+  };
+  profileread().then((v) => {
+    console.log(v);
+    res.send(v);
+  });
+});
+
 // db에 메모 저장
 app.post("/memoSave", (req, res) => {
   const _data = {
     userId: req.body.userId,
+    userNickname: req.body.userNickname,
     contentText: req.body.contentText,
     contentLongText: req.body.contentLongText,
     contentImage: req.body.contentImage,
@@ -191,7 +274,6 @@ app.post("/memoUpdate", (req, res) => {
       },
       {
         $set: {
-          userId: req.body.userId,
           contentText: req.body.contentText,
           contentLongText: req.body.contentLongText,
           contentImage: req.body.contentImage,
@@ -231,6 +313,7 @@ app.post("/algorithmLoad", (req, res) => {
       $and: [
         {
           recommendPoint: { $gte: data },
+          agreeToShare: 1,
         },
       ],
     })
@@ -251,9 +334,30 @@ app.post("/recentMemoLoad", (req, res) => {
   (async () => {
     const memo = await MemoData.find({
       $nor: [{ userId: loginId }],
+      $and: [
+        {
+          agreeToShare: 1,
+        },
+      ],
     })
       .sort({ _id: -1 })
       .limit(10)
+      .lean();
+    return memo;
+  })().then((v) => {
+    res.send(v);
+  });
+});
+
+// db에서 북마크된 특정 메모 데이터 불러오기
+app.post("/bookmarkMemoLoad", (req, res) => {
+  const loginId = req.body.loginId;
+  // 최신 데이터 불러오기
+  (async () => {
+    const memo = await MemoData.find({
+      bookmarkIdList: { $in: loginId },
+    })
+      .sort({ _id: -1 })
       .lean();
     return memo;
   })().then((v) => {
@@ -275,7 +379,7 @@ app.post("/memoSearch", (req, res) => {
   const keyWord = req.body.keyWord;
   (async () => {
     const memo = await MemoData.find({
-      contentText: { $in: keyWord },
+      contentLongText: { $regex: keyWord },
     }).lean();
     return memo;
   })().then((v) => {
@@ -283,7 +387,7 @@ app.post("/memoSearch", (req, res) => {
   });
 });
 
-// 좋아요 아이디 리스트에 아이디 넣기
+// 좋아요 아이디 리스트에 아이디 넣기, 좋아요 숫자 증가
 app.post("/addToLikeList", (req, res) => {
   (async () => {
     // id 찾고
@@ -410,21 +514,21 @@ app.post("/delToFriendsList", (req, res) => {
 app.post("/addToBookmarkList", (req, res) => {
   (async () => {
     // id 찾고
-    const findList = await UserData.find({
-      user_id: req.body.hostId,
+    const findList = await MemoData.find({
+      _id: req.body.memoId,
     }).lean();
     return findList;
   })().then((v) => {
     // 배열에 id push한 뒤 업데이트
-    v[0].bookmark_list.push(req.body.memoId);
+    v[0].bookmarkIdList.push(req.body.hostId);
     (async () => {
-      await UserData.updateOne(
+      await MemoData.updateOne(
         {
-          user_id: req.body.hostId,
+          _id: req.body.memoId,
         },
         {
           $set: {
-            bookmark_list: v[0].bookmark_list,
+            bookmarkIdList: v[0].bookmarkIdList,
           },
         },
         { upsert: true }
@@ -437,25 +541,25 @@ app.post("/addToBookmarkList", (req, res) => {
 // 북마크 리스트에 게시물 아이디 빼기
 app.post("/delToBookmarkList", (req, res) => {
   (async () => {
-    const findList = await UserData.find({
-      user_id: req.body.hostId,
+    const findList = await MemoData.find({
+      _id: req.body.memoId,
     }).lean();
     return findList;
   })().then((v) => {
     // 배열에 id 찾아 splice
-    for (let i = 0; i < v[0].bookmark_list.length; i++) {
-      if (v[0].bookmark_list[i] === req.body.memoId) {
-        v[0].bookmark_list.splice(i, 1);
+    for (let i = 0; i < v[0].bookmarkIdList.length; i++) {
+      if (v[0].bookmarkIdList[i] === req.body.hostId) {
+        v[0].bookmarkIdList.splice(i, 1);
       }
     }
     (async () => {
-      await UserData.updateOne(
+      await MemoData.updateOne(
         {
-          user_id: req.body.hostId,
+          _id: req.body.memoId,
         },
         {
           $set: {
-            bookmark_list: v[0].bookmark_list,
+            bookmarkIdList: v[0].bookmarkIdList,
           },
         },
         { upsert: true }
@@ -492,8 +596,17 @@ app.post("/addCommentText", (req, res) => {
           },
         }
       );
-    })();
-    res.send("수정완료");
+      return req.body._id;
+    })().then((v) => {
+      (async () => {
+        const sendList = await MemoData.find({
+          _id: v,
+        }).lean();
+        return sendList;
+      })().then((v) => {
+        res.send(v);
+      });
+    });
   });
 });
 
@@ -527,6 +640,25 @@ app.post("/delCommentText", (req, res) => {
     })();
     res.send("수정완료");
   });
+});
+
+// mobilenet 저장하기
+app.post("/mobilenetUpdate", (req, res) => {
+  console.log(req.body);
+  (async () => {
+    await MemoData.updateOne(
+      {
+        _id: req.body._id,
+      },
+      {
+        $set: {
+          mobilenetResult: req.body.mobilenetResult,
+        },
+      },
+      { upsert: true }
+    );
+  })();
+  res.send("수정완료");
 });
 
 app.listen(port, () => {

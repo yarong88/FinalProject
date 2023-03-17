@@ -12,6 +12,9 @@
         </div>
         <img class="recent-memo-image" :src="data.contentImage" alt="" />
         <div style="font-size: small">{{ data.writingTime }}</div>
+        <div class="predict-text">
+          <span>{{ data.mobilenetResult }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -40,6 +43,17 @@
             <span>{{ recentMemoModalData.ratingScore }}점</span>
             <span>추천 : {{ recentMemoModalData.likeIdList.length }}</span>
             <button @click="recentMemoModalOff">모달창 닫기</button>
+            <div>
+              <span>이미지 분석하기</span>
+              <button @click="predict(recentMemoModalData)">mobilenet</button>
+            </div>
+            <div>
+              이미지 분석 결과 <span>{{ this.mobilenetResult }}</span>
+            </div>
+            <div>
+              이전 분석 결과
+              <span>{{ recentMemoModalData.mobilenetResult }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -49,6 +63,9 @@
 
 <script>
 /* eslint-disable */
+import axios from "axios";
+import * as tf from "@tensorflow/tfjs";
+import * as mobilenet from "@tensorflow-models/mobilenet";
 export default {
   name: "app",
   props: ["recentMemo"],
@@ -56,6 +73,7 @@ export default {
     return {
       recentMemoModalStatus: false,
       recentMemoModalData: Object,
+      mobilenetResult: "",
     };
   },
   methods: {
@@ -67,6 +85,37 @@ export default {
     recentMemoModalOff() {
       this.recentMemoModalStatus = false;
       document.body.style.overflow = "auto";
+    },
+    predict(data) {
+      const img = document.createElement("img");
+      img.src = data.contentImage;
+      this.mobilenetResult = "이미지 분석중..";
+      mobilenet
+        .load()
+        .then((model) => model.classify(img))
+        .then((rst) => {
+          this.mobilenetResult =
+            "분석결과 : " +
+            rst[0].className +
+            "(" +
+            (rst[0].probability * 100).toFixed(2) +
+            "%)";
+          axios
+            .post("/mobilenetUpdate", {
+              _id: data._id,
+              mobilenetResult:
+                rst[0].className +
+                "(" +
+                (rst[0].probability * 100).toFixed(2) +
+                "%)",
+            })
+            .then((response) => {
+              console.log(response.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
     },
   },
 };
@@ -90,6 +139,7 @@ export default {
   background-color: #e1e1e1;
 }
 .recent-memo {
+  position: relative;
   width: 300px;
   height: 250px;
   margin: auto;
@@ -111,5 +161,22 @@ export default {
 .recent-memo-image {
   width: 180px;
   height: 120px;
+}
+.predict-text {
+  visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  background-image: url("../assets/speech_bubble.png");
+  background-size: 100% 90%;
+  position: absolute;
+  z-index: 1;
+  bottom: 65px;
+  left: 210px;
+}
+.recent-memo:hover .predict-text {
+  visibility: visible;
 }
 </style>

@@ -52,6 +52,15 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/EditProfile.vue"),
   },
+  {
+    path: "/Bookmark",
+    name: "Bookmark",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Bookmarks.vue"),
+  },
 ];
 
 const router = createRouter({

@@ -131,6 +131,11 @@ export default {
 <style>
 .log-in-container {
   height: 600px;
+  display: inline-block;
+}
+#sign_in {
+  width: 350px;
+  height: auto;
 }
 h3 {
   text-align: center;
@@ -170,13 +175,6 @@ h3 {
   backface-visibility: hidden;
   margin-right: 6px;
 }
-#sign_in {
-  width: 350px;
-  height: auto;
-  position: absolute;
-  top: 10%;
-  left: 40%;
-}
 .input-group {
   display: block;
 }
@@ -202,6 +200,7 @@ h3 {
   float: right;
 }
 .signin-btn {
+  font-family: "BMYEONSUNG";
   width: 100%;
   height: 40px;
   margin-top: 30px;

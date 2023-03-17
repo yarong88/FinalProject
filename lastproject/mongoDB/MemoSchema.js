@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const DataSchema = new Schema({
   userId: String,
+  userNickname: String,
   contentText: Array,
   contentLongText: String,
   contentImage: String,
@@ -10,8 +11,10 @@ const DataSchema = new Schema({
   ratingScore: Number,
   recommendPoint: Number,
   likeIdList: Array,
+  bookmarkIdList: Array,
   commentList: Array,
   agreeToShare: Number,
+  mobilenetResult: String,
 });
 
 module.exports = mongoose.model("MemoData", DataSchema, "MemoData");

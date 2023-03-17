@@ -26,7 +26,7 @@
           >
             중복검사
           </button>
-          <div ref="valid_text" class="valid-text tooltip-bottom">
+          <div ref="valid_text" class="valid-common valid-text tooltip-bottom">
             유효하지 않은 아이디 입니다. <br />
             영문과 숫자만 사용할 수 있습니다.
           </div>
@@ -44,7 +44,10 @@
             placeholder=" password"
             @keyup="pwdValid"
           />
-          <div class="valid-text" v-if="!pwdValidFlag">
+          <div
+            ref="valid_password"
+            class="valid-common valid-password tooltip-bottom"
+          >
             유효하지 않은 비밀번호 입니다. <br />대문자 / 소문자 / 숫자가 1개
             이상 존재해야합니다. <br />
             또한, 8자이상 16자 이하여야합니다.
@@ -62,7 +65,10 @@
             placeholder=" password - confirm"
             @keyup="pwdCheckValid"
           />
-          <div class="valid-text" v-if="!pwdCheckFlag">
+          <div
+            ref="match_password"
+            class="valid-common match-password tooltip-bottom"
+          >
             비밀번호가 동일하지 않습니다.
           </div>
         </div>
@@ -85,7 +91,10 @@
           >
             중복검사
           </button>
-          <div class="valid-text" v-if="!nickValidFlag">
+          <div
+            ref="valid_nickname"
+            class="valid-common valid-nickname tooltip-bottom"
+          >
             유효하지 않은 닉네임입니다. <br />영문과 숫자만 사용할 수 있습니다.
           </div>
           <br />
@@ -109,7 +118,10 @@
           >
             중복검사
           </button>
-          <div class="valid-text" v-if="!emailValidFlag">
+          <div
+            ref="valid_email"
+            class="valid-common valid-email tooltip-bottom"
+          >
             유효하지 않은 이메일 입니다.
           </div>
           <br />
@@ -162,10 +174,11 @@ export default {
     idValid() {
       if (/^[A-Za-z0-9]+$/.test(this.user.id)) {
         // 영문/숫자
-        console.log(this.$refs.valid_text);
         this.$refs.valid_text.style.visibility = "hidden";
+        this.idValidFlag = true;
       } else {
         this.$refs.valid_text.style.visibility = "visible";
+        this.idValidFlag = false;
       }
     },
     pwdValid() {
@@ -173,31 +186,37 @@ export default {
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,16}$/.test(this.user.password)
         // 대문자 / 소문자 / 숫자가 1개 이상 존재하고 8자이상 16자 이하
       ) {
+        this.$refs.valid_password.style.visibility = "hidden";
         this.pwdValidFlag = true;
       } else {
+        this.$refs.valid_password.style.visibility = "visible";
         this.pwdValidFlag = false;
       }
     },
     pwdCheckValid() {
       if (this.user.password === this.pwdCheck) {
-        this.pwdCheckFlag = true;
+        this.$refs.match_password.style.visibility = "hidden";
       } else {
-        this.pwdCheckFlag = false;
+        this.$refs.match_password.style.visibility = "visible";
       }
     },
     nickValid() {
       if (/^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|\s]*$/.test(this.user.nickname)) {
         // 영문/숫자/한글
+        this.$refs.valid_nickname.style.visibility = "hidden";
         this.nickValidFlag = true;
       } else {
+        this.$refs.valid_nickname.style.visibility = "visible";
         this.nickValidFlag = false;
         // this.$refs.idvalid_text.disabled = false;
       }
     },
     emailCheckValid() {
       if (/^[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(this.user.email)) {
+        this.$refs.valid_email.style.visibility = "hidden";
         this.emailValidFlag = true;
       } else {
+        this.$refs.valid_email.style.visibility = "visible";
         this.emailValidFlag = false;
       }
     },
@@ -285,13 +304,11 @@ export default {
 <style>
 .sign-up-container {
   height: 600px;
+  display: inline-block;
 }
 #sign_up {
   width: 400px;
   height: auto;
-  position: absolute;
-  top: 10%;
-  left: 40%;
 }
 .info-input {
   margin-top: 30px;
@@ -300,19 +317,22 @@ export default {
   position: relative;
   display: inline;
 }
-.input-group .valid-text {
-  visibility: hidden; /* 이벤트가 없으면 툴팁 영역을 숨김 */
-  width: 120px; /* 툴팁 영역의 넓이를 설정 */
+/* 유효성 검사 */
+.input-group .valid-common {
+  /* width: 120px; 툴팁 영역의 넓이를 설정 */
   background-color: black;
-  color: #fff;
+  /* color: #fff; */
   text-align: center;
   border-radius: 6px;
   padding: 5px 0;
   color: red;
-  font-size: small;
-
+  font-size: 20px;
   position: absolute; /* 절대 위치를 사용 */
   z-index: 1;
+}
+/* 아이디 유효성 검사 */
+.input-group .valid-text {
+  visibility: hidden; /* 이벤트가 없으면 툴팁 영역을 숨김 */
 }
 .input-group .valid-text::after {
   content: " "; /* 정사각형 영역 사용 */
@@ -320,6 +340,57 @@ export default {
   border-style: solid;
   border-width: 5px; /* 테두리 넓이를 5px 로 설정 */
 }
+/* 패스워드 유효성 검사 */
+.input-group .valid-password {
+  visibility: hidden;
+}
+.input-group .valid-password::after {
+  content: " ";
+  position: absolute;
+  border-style: solid;
+  border-width: 5px;
+}
+/* 패스워드 유효성 검사 */
+.input-group .valid-password {
+  visibility: hidden;
+}
+.input-group .valid-password::after {
+  content: " ";
+  position: absolute;
+  border-style: solid;
+  border-width: 5px;
+}
+/* 패스워드 매칭 검사 */
+.input-group .match-password {
+  visibility: hidden;
+}
+.input-group .match-password::after {
+  content: " ";
+  position: absolute;
+  border-style: solid;
+  border-width: 5px;
+}
+/* 닉네임 유효성 검사 */
+.input-group .valid-nickname {
+  visibility: hidden;
+}
+.input-group .valid-nickname::after {
+  content: " ";
+  position: absolute;
+  border-style: solid;
+  border-width: 5px;
+}
+/* 이메일 유효성 검사 */
+.input-group .valid-email {
+  visibility: hidden;
+}
+.input-group .valid-email::after {
+  content: " ";
+  position: absolute;
+  border-style: solid;
+  border-width: 5px;
+}
+/* 툴팁 박스 모양 */
 .input-group .tooltip-bottom {
   width: 400px;
   top: 35px;
@@ -332,6 +403,7 @@ export default {
   margin-left: -5px;
   border-color: transparent transparent black transparent;
 }
+/* 툴팁 박스 모양 끝 */
 .sign-up-input {
   display: inline;
   border-left-width: 0;
