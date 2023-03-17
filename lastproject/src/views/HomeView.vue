@@ -250,31 +250,37 @@
                       name="rating"
                       value="5"
                       id="rate1"
+                      v-model="rate"
                     /><label for="rate1">⭐</label>
                     <input
                       type="radio"
                       name="rating"
                       value="4"
                       id="rate2"
+                      v-model="rate"
                     /><label for="rate2">⭐</label>
                     <input
                       type="radio"
                       name="rating"
                       value="3"
                       id="rate3"
+                      v-model="rate"
                     /><label for="rate3">⭐</label>
                     <input
                       type="radio"
                       name="rating"
                       value="2"
                       id="rate4"
+                      v-model="rate"
                     /><label for="rate4">⭐</label>
                     <input
                       type="radio"
                       name="rating"
                       value="1"
                       id="rate5"
+                      v-model="rate"
                     /><label for="rate5">⭐</label>
+                    {{ rate }}
                   </fieldset>
                 </form>
                 <!-- 이미지 저장 -->
@@ -383,6 +389,7 @@ export default {
       sidebarStatus: false,
       sidebarButtonStatus: false,
       mobileStatus: false,
+      rate: "",
       initialImage: [
         {
           type: "dash",
@@ -489,6 +496,10 @@ export default {
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    stateChange(event) {
+      var selected = event.target.value;
+      console.log("selected : ", selected);
+    },
     // 페이지 이동시 경고창
     unLoadEvent: function (event) {
       if (this.certification) return;

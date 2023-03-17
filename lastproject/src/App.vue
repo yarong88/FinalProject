@@ -156,7 +156,7 @@ export default {
       this.myPageModalStatus = false;
     },
     value() {
-      axios.get("/nickr/" + this.user_id).then((res) => {
+      axios.get("/profiler/" + this.user_id).then((res) => {
         this.user_nickname = res.data.user_nickname;
         this.user_email = res.data.user_email;
       });
