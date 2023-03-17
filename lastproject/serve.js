@@ -78,6 +78,7 @@ app.get("/SignIn/SignUp/idc/:user_id", (req, res) => {
   };
   id_find();
 });
+//회원가입 시 닉네임 체크
 app.get("/SignIn/SignUp/nickc/:user_nickname", (req, res) => {
   const user_nickname = req.params.user_nickname;
   console.log(user_nickname);
@@ -94,6 +95,27 @@ app.get("/SignIn/SignUp/nickc/:user_nickname", (req, res) => {
   };
   nick_find();
 });
+
+//마이페이지 닉네임 체크
+app.get("/nickc/:user_nickname", (req, res) => {
+  const user_nickname = req.params.user_nickname;
+  console.log(user_nickname);
+  const nick_find = async () => {
+    const t = await UserData.find({ user_nickname }, { _id: 0, __v: 0 }).lean();
+    if (t.length === 0) {
+      console.log("닉네임 사용가능");
+      res.send("가능");
+    }
+    else {
+      console.log("닉네임 사용불가 - 중복");
+      res.send(user_nickname);
+    }
+    // console.log(t)
+  };
+  nick_find();
+});
+
+//회원가입 이메일 체크
 app.get("/SignIn/SignUp/emailc/:user_email", (req, res) => {
   const user_email = req.params.user_email;
   console.log(user_email);
@@ -108,9 +130,55 @@ app.get("/SignIn/SignUp/emailc/:user_email", (req, res) => {
     }
     // console.log(t)
   };
+
   email_find();
 });
 
+//마이페이지 이메일 체크
+app.get("/emailc/:user_email", (req, res) => {
+  const user_email = req.params.user_email;
+  console.log(user_email);
+  const email_find = async () => {
+    const t = await UserData.find({ user_email }, { _id: 0, __v: 0 }).lean();
+    if (t.length === 0) {
+      console.log("이메일 사용가능");
+      res.send("가능");
+    } else {
+      console.log("이메일 사용불가 - 중복");
+      res.send(user_email);
+    }
+    // console.log(t)
+  };
+  email_find();
+});
+app.post("/editpro", (req, res) => {
+  const user_id = req.body.user_id;
+  const user_nickname = req.body.user_nickname;
+  const user_email = req.body.user_email;
+  const user_birth = req.body.user_birth;
+  const user_gender = req.body.user_gender;
+  const user_hobby = req.body.user_hobby;
+  const modify_user = async () => {
+    const t = await UserData.updateOne(
+      {
+        user_id: user_id,
+      },
+      {
+        $set: {
+          user_nickname: user_nickname,
+          user_email: user_email,
+          user_birth: user_birth,
+          user_gender: user_gender,
+          user_hobby: user_hobby
+        },
+      },
+      { upsert: true }
+    );
+    console.log(t)
+    res.send("수정완료");
+  }
+  modify_user()
+});
 app.post("/SignIn", (req, res) => {
   const user_id = req.body.user_id;
   const user_pwd = req.body.user_pwd;
@@ -511,16 +579,16 @@ app.post("/delCommentText", (req, res) => {
 });
 
 // 모달창 닉네임 읽어오기
-app.get('/nickr/:user_id', (req, res) => {
+app.get('/profiler/:user_id', (req, res) => {
   // const user_id = localStorage.getItem("login-id")
   const user_id = req.params.user_id
   console.log(user_id)
-  const nickread = async () => {
+  const profileread = async () => {
     const t = await UserData.findOne({ user_id }, { _id: 0, __v: 0 })
       .lean()
     return t
   }
-  nickread().then(v => {
+  profileread().then(v => {
     console.log(v)
     res.send(v)
   })
