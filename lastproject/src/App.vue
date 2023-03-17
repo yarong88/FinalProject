@@ -60,7 +60,7 @@
     <div class="my-page-modal">
       <div class="my-page-modal-body">
         <div class="user-info">
-          <div class="profile-img">
+          <div class="profile-img" @click="movepage">
             <i class="fa fa-user-o fa-3x" aria-hidden="true"></i>
           </div>
           <div class="p-nickname">{{ user_nickname }}</div>
@@ -72,7 +72,7 @@
             class="modal-btn"
             @click="editProfile"
           >
-            <i class="fa fa-pencil" aria-hidden="true"></i>&nbsp;프로필 편집
+            <i class="fa fa-pencil" aria-hidden="true"></i>&nbsp;프로필
           </button>
         </div>
         <div class="bookmark-wrap">
@@ -99,6 +99,7 @@
 
 <script>
 /* eslint-disable */
+import axios from "axios";
 export default {
   data() {
     return {
@@ -106,7 +107,8 @@ export default {
       logInStatus: true,
       myPageModalStatus: false,
       user_nickname: "",
-      user_id: "",
+      user_email: "",
+      user_id: localStorage.getItem("login-id"),
     };
   },
   watch: {
@@ -127,6 +129,7 @@ export default {
       this.user_email = loginData.user_email;
       this.logInStatus = false;
     }
+    this.value();
   },
   methods: {
     test: function () {
@@ -147,6 +150,16 @@ export default {
     editProfile() {
       this.$router.push("./EditProfile");
       this.myPageModalStatus = false;
+    },
+    movepage() {
+      this.$router.push("./EditProfile");
+      this.myPageModalStatus = false;
+    },
+    value() {
+      axios.get("/nickr/" + this.user_id).then((res) => {
+        this.user_nickname = res.data.user_nickname;
+        this.user_email = res.data.user_email;
+      });
     },
   },
 };
@@ -253,6 +266,7 @@ li {
   background-color: #cfcfcf;
   margin-top: 45px;
   margin-left: 36.5%;
+  cursor: pointer;
 }
 .p-nickname {
   margin-top: 17px;

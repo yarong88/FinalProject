@@ -7,9 +7,10 @@ const userSchema = new Schema({
   user_nickname: String,
   user_email: String,
 
-  birth: String,
-  gender: String,
-  hobby: String,
+  user_profile: String,
+  user_birth: String,
+  user_gender: String,
+  user_hobby: String,
   // id: Number,
 
   friends_list: Array,
