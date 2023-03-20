@@ -823,6 +823,11 @@ body {
   /* font-family: "BMYEONSUNG"; */
   background-color: #fafcff;
 }
+.wrap-memo {
+  padding: 0px;
+  margin: 0px;
+  display: inline-block;
+}
 .memo-title {
   /* background-color: rgb(190, 236, 236);
   height: 50px;
@@ -830,11 +835,12 @@ body {
   margin-bottom: 20px;
   box-shadow: 4px 4px 4px rgb(192, 192, 192); */
   position: relative;
+  width: 1000px;
 }
 .sidebar-onoff {
   position: absolute;
-  left: 668px;
-  bottom: 34px;
+  left: 670px;
+  bottom: 30px;
 }
 .sidebar-onoff:hover .sidebar-button-icon {
   visibility: hidden;
@@ -863,10 +869,6 @@ body {
   height: 100px;
   text-align: center;
   font-size: 20px;
-}
-.wrap-memo {
-  padding: 0px;
-  margin: 0px;
 }
 .memo-container {
   display: flex;
@@ -1200,6 +1202,7 @@ body {
     position: absolute;
     display: flex;
     bottom: 590px;
+    margin: 5px;
   }
   .input-text-text {
     display: none;
@@ -1218,8 +1221,12 @@ body {
     height: 400px;
   }
   .sidebar-onoff {
-    left: 170px;
-    bottom: 25px;
+    left: 221px;
+    bottom: 23px;
+  }
+  .sidebar-button-icon {
+    width: 16px;
+    height: 16px;
   }
   .sidebar {
     margin-left: 0;

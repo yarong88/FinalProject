@@ -53,7 +53,7 @@
             <img class="detail-image" :src="postData.contentImage" alt="" />
           </div>
           <div class="button-container">
-            <p>Details :</p>
+            <p class="detail-title">Details :</p>
             <div>
               {{ postData.contentText[0] }}
             </div>
@@ -61,11 +61,13 @@
               {{ postData.contentLongText }}
             </div>
             <div>{{ postData.writingTime }}</div>
-            <span>{{ postData.ratingScore }}점</span>
-            <span>추천 : {{ postData.likeIdList.length }}</span>
-            <!-- <button @click="imgModify(postData)">수정하기</button>
+            <div>
+              <span>{{ postData.ratingScore }}점 /</span>
+              <span>/ 추천 : {{ postData.likeIdList.length }} /</span>
+              <!-- <button @click="imgModify(postData)">수정하기</button>
           <button @click="imgDelete(postData)">삭제하기</button> -->
-            <button @click="modalOnOff">모달창 닫기</button>
+              <button @click="modalOnOff">모달창 닫기</button>
+            </div>
             <!-- 댓글 -->
             <div class="comment-text-container" v-if="commentStatus">
               <i class="bi bi-chat-dots"></i>
@@ -343,6 +345,12 @@ export default {
     width: 360px;
     height: 680px;
     bottom: 0px;
+  }
+  .post-item-modal-body .source .button-container {
+    flex-direction: column;
+  }
+  .detail-title {
+    display: none;
   }
   .post-item {
     width: 370px;

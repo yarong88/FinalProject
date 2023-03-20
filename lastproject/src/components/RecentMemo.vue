@@ -11,7 +11,9 @@
           {{ data.contentText[0] }}
         </div>
         <img class="recent-memo-image" :src="data.contentImage" alt="" />
-        <div style="font-size: small">{{ data.writingTime }}</div>
+        <div class="recent-memo-time" style="font-size: small">
+          {{ data.writingTime }}
+        </div>
         <div class="predict-text">
           <span>{{ data.mobilenetResult }}</span>
         </div>
@@ -178,5 +180,28 @@ export default {
 }
 .recent-memo:hover .predict-text {
   visibility: visible;
+}
+@media screen and (max-width: 500px) {
+  .recent-memo-container {
+    width: 375px;
+  }
+  .recent-memo-inner-container {
+    display: block;
+    width: 370px;
+  }
+  .recent-memo-title {
+    position: absolute;
+    bottom: 160px;
+  }
+  .recent-memo-image {
+    position: absolute;
+    bottom: 37px;
+    right: 62px;
+  }
+  .recent-memo-time {
+    position: absolute;
+    top: 219px;
+    left: 58px;
+  }
 }
 </style>

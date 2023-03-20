@@ -14,7 +14,9 @@
           {{ data.contentText[0] }}
         </div>
         <img class="result-image" :src="data.contentImage" alt="" />
-        <div style="font-size: small">{{ data.writingTime }}</div>
+        <div class="result-time" style="font-size: small">
+          {{ data.writingTime }}
+        </div>
       </div>
     </div>
   </div>
@@ -130,12 +132,29 @@ export default {
     display: block;
     width: 370px;
   }
+  .result-box {
+    position: relative;
+  }
+  .result-title {
+    position: absolute;
+    bottom: 160px;
+  }
+  .result-image {
+    position: absolute;
+    bottom: 37px;
+    right: 62px;
+  }
+  .result-time {
+    position: absolute;
+    top: 219px;
+    left: 58px;
+  }
   .canvas-title {
     display: none;
   }
   .detail-image {
-    width: 360px;
-    height: 240px;
+    width: 345px;
+    height: 230px;
   }
 }
 </style>

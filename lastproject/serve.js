@@ -341,7 +341,7 @@ app.post("/recentMemoLoad", (req, res) => {
       ],
     })
       .sort({ _id: -1 })
-      .limit(10)
+      .limit(20)
       .lean();
     return memo;
   })().then((v) => {

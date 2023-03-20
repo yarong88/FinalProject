@@ -125,12 +125,5 @@ export default {
   #search {
     width: 250px;
   }
-  .recent-memo-container {
-    width: 375px;
-  }
-  .recent-memo-inner-container {
-    display: block;
-    width: 370px;
-  }
 }
 </style>

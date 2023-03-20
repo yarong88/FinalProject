@@ -7,7 +7,7 @@
           @click="(searchStatus = true) ? null : searchTransform"
           to="/"
           ><img class="main-title-img" src="./assets/note.png" alt="" />
-          <strong class="main-title-text">어서 그리다</strong>
+          <img class="main-title-text" src="./assets/logo_text.png" alt="" />
         </router-link>
       </div>
       <ul class="list-menu">
@@ -124,7 +124,11 @@
     </div>
   </div>
   <hr />
-  <div class="footer">Footer</div>
+  <div class="footer">
+    이용약관 | 개인정보처리방침 | 책임의 한계와 법적고지 | 회원정보 | 고객센터
+    <br />
+    Copyright © QUICKRECORD Corp. All Rights Reserved.
+  </div>
 </template>
 
 <script>
@@ -241,7 +245,7 @@ nav a.router-link-exact-active {
 .title-wrap {
   display: inline-block;
   position: absolute;
-  right: 767px;
+  right: 668px;
   text-align: center;
   /* margin-left: 4em; */
 }
@@ -258,10 +262,11 @@ nav a.router-link-exact-active {
   vertical-align: top;
 }
 .main-title-text {
-  font-family: "BMEuljiro";
-  display: inline-block;
+  /* font-family: "BMEuljiro"; */
+  /* display: inline-block;
   margin-top: 5px;
-  font-size: 30px;
+  font-size: 30px; */
+  width: 250px;
 }
 .main-title-container:hover .main-title-text {
   font-size: 31px;
@@ -390,6 +395,20 @@ li {
   .header {
     height: 50px;
   }
+  .inner-header {
+    width: 396px;
+  }
+  .title-wrap {
+    right: 205px;
+    top: -5px;
+  }
+  .main-title-img {
+    width: 35px;
+    height: 35px;
+  }
+  .main-title-text {
+    width: 130px;
+  }
   .header-text {
     display: none;
   }
@@ -404,14 +423,9 @@ li {
     height: 20px;
     margin: 15px 20px 0px 0px;
   }
-  .header-icon-test {
-    width: 20px;
-    height: 20px;
-    margin: 15px 20px 0px 0px;
-  }
   .my-page-modal-body {
-    bottom: 300px;
-    left: 140px;
+    bottom: 485px;
+    left: 100px;
     width: 250px;
   }
 }
